@@ -276,7 +276,6 @@ const Education = () => {
   const desktopProgressRef = useRef<HTMLDivElement>(null);
   const mobileProgressRef = useRef<HTMLDivElement>(null);
 
-  // Heading reveal
   useEffect(() => {
     const el = headingRef.current;
     if (!el) return;
@@ -352,7 +351,7 @@ const Education = () => {
               marginBottom: "14px",
             }}
           >
-            05 / Education
+            {/* 05 / Education */}
           </p>
 
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "12px 16px" }}>
