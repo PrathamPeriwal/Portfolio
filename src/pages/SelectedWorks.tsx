@@ -47,8 +47,8 @@ const projects = [
     description:
       "Engineered a premium interactive developer portfolio featuring cinematic UI, advanced GSAP animations, seamless page transitions, and a responsive, performance-first architecture.",
     links: {
-      live: "https://your-portfolio-link.com",
-      code: "https://github.com/yourusername/portfolio",
+      live: "https://www.prathamperiwal.dev/",
+      code: "https://github.com/PrathamPeriwal/Portfolio",
     },
     image: "./portfolio.png",
     cta: "Live Project",

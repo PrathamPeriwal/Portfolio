@@ -102,10 +102,8 @@ const Pill = ({ label }: { label: string }) => {
 
 const SkillRow = ({
   category,
-  index,
 }: {
   category: (typeof skillCategories)[number];
-  index: number;
 }) => {
   const [hovered, setHovered] = useState(false);
   const duration = category.skills.length * 2.2;
@@ -291,8 +289,8 @@ const SkillsPhilosophy = () => {
 
         {/* Skills Rows */}
         <div className="w-full border-t border-black mt-16">
-          {skillCategories.map((category, index) => (
-            <SkillRow key={category.title} category={category} index={index} />
+          {skillCategories.map((category) => (
+            <SkillRow key={category.title} category={category} />
           ))}
         </div>
       </section>

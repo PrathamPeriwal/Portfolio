@@ -1,10 +1,10 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect } from "react";
 
-const CHARS_DENSE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@_!∆%&';
-const CHARS_LIGHT = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ —.';
-const CHARS_TAGLINE = 'abcdeffhiiiijklnoopqrrssssttuvvxyyz-,#@_!∆%&';
+const CHARS_DENSE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@_!∆%&";
+const CHARS_LIGHT = "ABCDEFGHIJKLMNOPQRSTUVWXYZ —.";
+const CHARS_TAGLINE = "abcdeffhiiiijklnoopqrrssssttuvvxyyz-,#@_!∆%&";
 
-const CURSOR_FRAMES = ['█', '▓', '▒', '░'];
+const CURSOR_FRAMES = ["█", "▓", "▒", "░"];
 const CURSOR_FRAME_MS = 38;
 
 const SCRAMBLE_PRE_MS = 110;
@@ -26,22 +26,27 @@ export function runScramble(
   let rafId = 0;
   let cancelled = false;
   const startTime = performance.now();
-  const chars = original.split('');
+  const chars = original.split("");
   const total = chars.length;
 
-  const scrambled = chars.map((c) => (c === ' ' ? ' ' : randChar(pool)));
+  const scrambled = chars.map((c) => (c === " " ? " " : randChar(pool)));
 
   function buildHTML(cursorPos: number | null): string {
-    let html = '';
+    let html = "";
     for (let i = 0; i < total; i++) {
-      if (chars[i] === ' ') { html += ' '; continue; }
+      if (chars[i] === " ") {
+        html += " ";
+        continue;
+      }
 
       if (cursorPos === null) {
         html += scrambled[i];
       } else if (i < cursorPos) {
         html += chars[i];
       } else if (i === cursorPos) {
-        const frameIdx = Math.floor(performance.now() / CURSOR_FRAME_MS) % CURSOR_FRAMES.length;
+        const frameIdx =
+          Math.floor(performance.now() / CURSOR_FRAME_MS) %
+          CURSOR_FRAMES.length;
         html += `<span style="opacity:0.7;color:#fff">${CURSOR_FRAMES[frameIdx]}</span>`;
       } else {
         scrambled[i] = randChar(pool);
@@ -57,7 +62,7 @@ export function runScramble(
 
     if (elapsed < SCRAMBLE_PRE_MS) {
       for (let i = 0; i < total; i++) {
-        if (chars[i] !== ' ') scrambled[i] = randChar(pool);
+        if (chars[i] !== " ") scrambled[i] = randChar(pool);
       }
       el.innerHTML = buildHTML(null);
       rafId = requestAnimationFrame(frame);
@@ -79,23 +84,36 @@ export function runScramble(
   }
 
   rafId = requestAnimationFrame(frame);
-  return () => { cancelled = true; cancelAnimationFrame(rafId); };
+  return () => {
+    cancelled = true;
+    cancelAnimationFrame(rafId);
+  };
 }
 
 export interface ScrambleOptions {
   travelMs?: number;
-  pool?: 'dense' | 'light' | 'tagline';
+  pool?: "dense" | "light" | "tagline";
   playOnMount?: boolean;
   mountDelay?: number;
 }
 
 export function useScramble(original: string, options: ScrambleOptions = {}) {
-  const { travelMs = 680, pool = 'dense', playOnMount = false, mountDelay = 300 } = options;
+  const {
+    travelMs = 680,
+    pool = "dense",
+    playOnMount = false,
+    mountDelay = 300,
+  } = options;
 
   const ref = useRef<HTMLElement | null>(null);
   const cancelRef = useRef<(() => void) | null>(null);
   const runningRef = useRef(false);
-  const charPool = pool === 'tagline' ? CHARS_TAGLINE : pool === 'light' ? CHARS_LIGHT : CHARS_DENSE;
+  const charPool =
+    pool === "tagline"
+      ? CHARS_TAGLINE
+      : pool === "light"
+        ? CHARS_LIGHT
+        : CHARS_DENSE;
 
   const trigger = useCallback(() => {
     const el = ref.current;
@@ -113,12 +131,12 @@ export function useScramble(original: string, options: ScrambleOptions = {}) {
     if (!el) return;
 
     const handleEnter = () => {
-      if (window.matchMedia('(hover: none)').matches) return;
+      if (window.matchMedia("(hover: none)").matches) return;
       trigger();
     };
 
-    el.addEventListener('mouseenter', handleEnter);
-    return () => el.removeEventListener('mouseenter', handleEnter);
+    el.addEventListener("mouseenter", handleEnter);
+    return () => el.removeEventListener("mouseenter", handleEnter);
   }, [trigger]);
 
   useEffect(() => {
@@ -127,8 +145,12 @@ export function useScramble(original: string, options: ScrambleOptions = {}) {
     return () => clearTimeout(t);
   }, [playOnMount, mountDelay, trigger]);
 
-  useEffect(() => () => { cancelRef.current?.(); }, []);
+  useEffect(
+    () => () => {
+      cancelRef.current?.();
+    },
+    [],
+  );
 
   return { ref, trigger };
 }
-

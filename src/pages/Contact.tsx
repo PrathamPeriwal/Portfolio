@@ -1,8 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6_hmNogiRhIAkAdfWU9q0wQb2WdEvswPCTHCd9U-giehtMTgKcmZq2NsQES-XYuxd/exec";
-
 const Contact = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,18 +23,36 @@ const Contact = () => {
     setStatus("sending");
 
     try {
-      const body = new URLSearchParams(formData);
-
-      await fetch(APPS_SCRIPT_URL, {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: body.toString(),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "ce34da1e-448d-4be1-951e-6afbdff0572f",
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          from_name: "Portfolio Contact Form",
+        }),
       });
 
-      setStatus("success");
-      setFormData({ firstName: "", lastName: "", email: "", subject: "", message: "" });
-    } catch {
+      const result = await response.json();
+
+      if (result.success) {
+        setStatus("success");
+        setFormData({ firstName: "", lastName: "", email: "", subject: "", message: "" });
+        setTimeout(() => {
+          setStatus("idle");
+        }, 5000);
+      } else {
+        console.error("Form submission failed:", result);
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
       setStatus("error");
     }
   };

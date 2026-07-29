@@ -10,7 +10,7 @@ import SelectedWorks from "./SelectedWorks";
 import VectorBridge from "./VectorBridge";
 import Footer from "./Footer";
 import Contact from "./Contact";
-import Testimonial from "./Testimonial";
+import Education from "./Education";
 import Navigation from "@/components/Navigation";
 
 const CursorFollower = () => {
@@ -23,7 +23,7 @@ const CursorFollower = () => {
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
       mouseX.set(e.clientX - 12);
-      mouseY.set(e.clientY - 12); 
+      mouseY.set(e.clientY - 12);
     };
     window.addEventListener("mousemove", moveCursor);
     return () => window.removeEventListener("mousemove", moveCursor);
@@ -320,7 +320,7 @@ const Index = () => {
         </div>
 
         <div className="bg-black text-white relative z-20">
-          <Testimonial />
+          <Education />
         </div>
 
         <div id="contact" className="relative z-20 bg-white text-black">

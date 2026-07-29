@@ -104,16 +104,9 @@ const About = () => {
             </p>
           </motion.div>
 
-          {/* Inline tech stack summary */}
-          <motion.p
-            style={{ y: y5, opacity: opacity5 }}
-            className="font-sans text-sm lg:text-base tracking-[0.1em] text-black/40 leading-[1.8] mt-6"
-          >
-            <span className="font-semibold text-black/60 tracking-[0.15em]">Core:&nbsp;</span>
-            TypeScript, Node.js, PostgreSQL, REST APIs, Docker, Git. Fluent in React & Next.js for when the system needs a face. I care about the whole system, not just the feature.
-          </motion.p>
 
         </div>
+
 
       </div>
     </section>

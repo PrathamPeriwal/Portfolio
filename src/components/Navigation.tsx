@@ -168,8 +168,8 @@ const Navigation = () => {
                 <motion.a
                   key={item.label}
                   href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={item.href.startsWith("mailto") ? "_self" : "_blank"}
+                  rel={item.href.startsWith("mailto") ? undefined : "noopener noreferrer"}
                   custom={i}
                   variants={socialVariants}
                   initial="closed"

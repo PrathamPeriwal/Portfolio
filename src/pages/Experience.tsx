@@ -157,7 +157,6 @@ const ExperienceCard = ({
     <div
       ref={cardRef}
       className="exp-card flex-shrink-0 w-full md:w-screen h-auto md:h-full flex flex-col justify-between px-6 md:px-16 lg:px-24 py-12 md:py-16 lg:py-20 relative"
-      data-index={index}
     >
       <div className="hidden md:block h-6" />
 
@@ -206,12 +205,12 @@ const ExperienceCard = ({
               {exp.company}
             </p>
 
-            <h1
+            <h3
               className="font-sans leading-tight tracking-tight text-black font-black"
               style={{ fontSize: "clamp(2.2rem, 3.8vw, 3.2rem)" }}
             >
               {exp.role}
-            </h1>
+            </h3>
           </div>
 
           {/* Bullets */}
@@ -343,9 +342,7 @@ const Experience = () => {
         <p
           className="exp-intro-label font-sans font-medium tracking-[0.28em] uppercase mb-2 opacity-0"
           style={{ fontSize: "10px", color: "#A0A0A0" }}
-        >
-          {/* 04 / Experience */}
-        </p>
+        />
 
         <h2 className="relative overflow-visible flex flex-row flex-wrap items-baseline gap-3 md:gap-5">
           <span
