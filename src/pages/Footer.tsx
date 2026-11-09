@@ -1,32 +1,35 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { belowLgQuery } from "@/lib/breakpoints";
 
 // ─── Animated link ─────────────────────────────────────────────────────────────
 const FooterLink = ({
   href,
   label,
   external = true,
+  tap = false,
 }: {
   href: string;
   label: string;
   external?: boolean;
+  tap?: boolean;
 }) => (
   <motion.a
     href={href}
     target={external ? "_blank" : "_self"}
     rel={external ? "noopener noreferrer" : undefined}
-    className="group relative flex items-center gap-2 w-fit"
+    className="group relative flex items-center gap-2 w-fit max-lg:min-h-11"
     whileHover={{ y: -2 }}
+    whileTap={tap ? { y: -2 } : undefined}
     transition={{ duration: 0.25, ease: "easeOut" }}
   >
-    <span className="font-sans text-sm font-medium tracking-wide text-white/55 group-hover:text-white transition-colors duration-300">
+    <span className="font-sans text-sm font-medium tracking-wide text-white/55 group-hover:text-white max-lg:group-active:text-white transition-colors duration-300">
       {label}
     </span>
-    <span className="text-white/35 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 ease-out text-sm">
+    <span className="text-white/35 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 max-lg:group-active:text-white max-lg:group-active:translate-x-0.5 max-lg:group-active:-translate-y-0.5 transition-all duration-300 ease-out text-sm">
       ↗
     </span>
-    {/* Sliding underline */}
-    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-white/50 transition-all duration-300 ease-out group-hover:w-[calc(100%-1.2rem)]" />
+    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-white/50 transition-all duration-300 ease-out group-hover:w-[calc(100%-1.2rem)] max-lg:group-active:w-[calc(100%-1.2rem)]" />
   </motion.a>
 );
 
@@ -34,7 +37,7 @@ const FooterLink = ({
 const BackToTop = () => (
   <motion.button
     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-    className="group flex items-center gap-2.5 text-white/35 hover:text-white transition-colors duration-400"
+    className="group flex items-center gap-2.5 text-white/35 hover:text-white max-lg:active:text-white max-lg:min-h-11 transition-colors duration-400"
     aria-label="Back to top"
     initial={{ opacity: 0 }}
     whileInView={{ opacity: 1 }}
@@ -44,7 +47,7 @@ const BackToTop = () => (
     <span className="font-sans text-[10px] tracking-[0.26em] uppercase font-medium">
       Back to top
     </span>
-    <span className="inline-block transition-transform duration-300 ease-out group-hover:-translate-y-1.5 text-base">
+    <span className="inline-block transition-transform duration-300 ease-out group-hover:-translate-y-1.5 max-lg:group-active:-translate-y-1.5 text-base">
       ↑
     </span>
   </motion.button>
@@ -53,6 +56,17 @@ const BackToTop = () => (
 // ─── Footer ────────────────────────────────────────────────────────────────────
 const Footer = () => {
   const footerRef = useRef<HTMLElement>(null);
+  const [belowLg, setBelowLg] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(belowLgQuery).matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(belowLgQuery);
+    const sync = () => setBelowLg(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: footerRef,
@@ -189,6 +203,7 @@ const Footer = () => {
                   href={link.href}
                   label={link.label}
                   external={link.external !== false}
+                  tap={belowLg}
                 />
               ))}
             </div>

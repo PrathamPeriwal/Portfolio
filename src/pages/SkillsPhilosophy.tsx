@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { LG } from "@/lib/breakpoints";
 
 // ─── Keyframe injected once into <head> ────────────────────────────────────────
 const marqueeKeyframe = `
@@ -9,7 +10,7 @@ const marqueeKeyframe = `
   }
   .skill-row-static { display: flex; }
   .skill-row-marquee { display: none; }
-  @media (hover: hover) and (min-width: 1024px) {
+  @media (hover: hover) and (min-width: ${LG}px) {
     .skill-row-static { display: none; }
     .skill-row-marquee { display: flex; }
   }
@@ -82,6 +83,11 @@ const Pill = ({ label }: { label: string }) => {
     <span
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
+      onPointerDown={(e) => {
+        if (e.pointerType !== "mouse") setHov(true);
+      }}
+      onPointerUp={() => setHov(false)}
+      onPointerCancel={() => setHov(false)}
       style={{
         display: "inline-flex",
         alignItems: "center",

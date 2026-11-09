@@ -166,10 +166,10 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="group flex items-center gap-3 text-lg font-bold uppercase tracking-wider hover:text-black/70 transition-colors disabled:opacity-50"
+                className="group flex items-center gap-3 text-lg font-bold uppercase tracking-wider hover:text-black/70 max-lg:active:text-black/70 max-lg:min-h-11 transition-colors disabled:opacity-50"
               >
                 {status === "sending" ? "Sending…" : "Send Message"}
-                <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
+                <span className="group-hover:translate-x-2 max-lg:group-active:translate-x-2 transition-transform duration-300">→</span>
               </button>
 
               {status === "success" && (

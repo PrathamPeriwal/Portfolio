@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, useSpring, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { Github, Linkedin, Instagram, Mail } from "lucide-react";
 import { useScramble } from "@/hooks/use-scramble";
+import { lgQuery } from "@/lib/breakpoints";
 
 import About from "./About";
 import Experience from "./Experience";
@@ -37,19 +38,52 @@ const CursorFollower = () => {
   );
 };
 
-const BrandLogo = () => (
-  <div className="fixed top-6 left-6 md:top-8 md:left-10 z-50 mix-blend-difference">
-    <button
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Back to top"
-      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+const BrandLogo = () => {
+  const [pastHero, setPastHero] = useState(false);
+
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+    const desktop = window.matchMedia(lgQuery);
+    if (!hero) return;
+
+    const sync = (heroVisible: boolean) => {
+      setPastHero(!desktop.matches && !heroVisible);
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      sync(entry.isIntersecting);
+    });
+    io.observe(hero);
+
+    const onDesktop = () => sync(hero.getBoundingClientRect().bottom > 0);
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      io.disconnect();
+      desktop.removeEventListener("change", onDesktop);
+    };
+  }, []);
+
+  return (
+    <div
+      className={`fixed top-6 left-6 md:top-8 md:left-10 z-50 mix-blend-difference max-lg:transition-opacity max-lg:duration-300 motion-reduce:transition-none ${
+        pastHero ? "max-lg:opacity-0 max-lg:pointer-events-none" : ""
+      }`}
     >
-      <h1 className="font-sans font-black text-2xl md:text-4xl tracking-tighter text-white flex items-start">
-        Pratham
-      </h1>
-    </button>
-  </div>
-);
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Back to top"
+        aria-hidden={pastHero || undefined}
+        tabIndex={pastHero ? -1 : undefined}
+        className="max-lg:inline-flex max-lg:min-h-11 max-lg:min-w-11 max-lg:items-center"
+        style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+      >
+        <h1 className="font-sans font-black text-2xl md:text-4xl tracking-tighter text-white flex items-start">
+          Pratham
+        </h1>
+      </button>
+    </div>
+  );
+};
 
 const AvailabilityBadge = () => (
   <motion.div
@@ -136,7 +170,7 @@ const MobileSocialStrip = () => {
           target={href.startsWith("mailto") ? "_self" : "_blank"}
           rel="noopener noreferrer"
           aria-label={label}
-          className="text-white hover:opacity-75 transition-opacity duration-300 inline-flex items-center justify-center p-[13px]"
+          className="text-white hover:opacity-75 active:opacity-75 transition-opacity duration-300 inline-flex items-center justify-center min-h-11 min-w-11"
         >
           <Icon size={18} strokeWidth={2.5} />
         </a>
@@ -234,7 +268,7 @@ const HeroContent = () => {
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative overflow-hidden border border-white px-5 py-3 md:px-6 md:py-3 flex items-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white px-5 py-3 md:px-6 md:py-3 max-lg:min-h-11 flex items-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="View Resume"
           >
             <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
@@ -252,7 +286,7 @@ const HeroContent = () => {
           {/* Secondary CTA */}
           <a
             href="#contact"
-            className="group relative overflow-hidden border border-white/30 px-5 py-3 md:px-6 md:py-3 flex items-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white/30 px-5 py-3 md:px-6 md:py-3 max-lg:min-h-11 flex items-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="Contact Me"
           >
             <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
@@ -275,11 +309,11 @@ const HeroContent = () => {
 const Index = () => {
   const footerContainerRef = useRef<HTMLDivElement>(null);
   const [footerReveal, setFooterReveal] = useState(
-    () => window.matchMedia("(min-width: 1024px)").matches
+    () => window.matchMedia(lgQuery).matches
   );
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia(lgQuery);
     const sync = () => setFooterReveal(mq.matches);
     sync();
     mq.addEventListener("change", sync);
@@ -311,7 +345,7 @@ const Index = () => {
       )}
 
       {/* Hero */}
-      <section className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-visible">
+      <section id="hero" className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-visible">
         <AvailabilityBadge />
         <div className="hidden lg:block"><SplashCursor /></div>
 

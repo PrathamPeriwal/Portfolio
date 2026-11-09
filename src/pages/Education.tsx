@@ -44,6 +44,16 @@ const EDU_ITEMS = [
   },
 ];
 
+function liftCard(el: HTMLDivElement, on: boolean) {
+  el.style.transform = on ? "translateY(-6px)" : "translateY(0)";
+  el.style.borderColor = on ? "#3C3C3C" : "#262626";
+  el.style.boxShadow = on
+    ? "0 18px 56px rgba(0,0,0,0.75)"
+    : "0 4px 32px rgba(0,0,0,0.55)";
+  const pill = el.querySelector<HTMLElement>(".year-pill");
+  if (pill) pill.style.borderColor = on ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.10)";
+}
+
 const EduCard = ({
   item,
   index,
@@ -90,20 +100,15 @@ const EduCard = ({
           "transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94), border-color 0.32s ease, box-shadow 0.32s ease",
         cursor: "default",
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-6px)";
-        e.currentTarget.style.borderColor = "#3C3C3C";
-        e.currentTarget.style.boxShadow = "0 18px 56px rgba(0,0,0,0.75)";
-        const pill = e.currentTarget.querySelector<HTMLElement>(".year-pill");
-        if (pill) pill.style.borderColor = "rgba(255,255,255,0.22)";
+      onMouseEnter={(e) => liftCard(e.currentTarget, true)}
+      onMouseLeave={(e) => liftCard(e.currentTarget, false)}
+      onPointerDown={(e) => {
+        if (e.pointerType !== "mouse") liftCard(e.currentTarget, true);
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.borderColor = "#262626";
-        e.currentTarget.style.boxShadow = "0 4px 32px rgba(0,0,0,0.55)";
-        const pill = e.currentTarget.querySelector<HTMLElement>(".year-pill");
-        if (pill) pill.style.borderColor = "rgba(255,255,255,0.10)";
+      onPointerUp={(e) => {
+        if (e.pointerType !== "mouse") liftCard(e.currentTarget, false);
       }}
+      onPointerCancel={(e) => liftCard(e.currentTarget, false)}
     >
       {/* Degree */}
       <h3

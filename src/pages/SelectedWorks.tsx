@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useLenis } from "lenis/react";
 import StarBorder from "../components/StarBorder";
+import { LG, belowLgQuery } from "@/lib/breakpoints";
 import "./ScrollStack.css";
 
 const projects = [
@@ -136,7 +137,7 @@ const SelectedWorks = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    const checkMobile = () => setIsMobile(window.innerWidth < LG);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -262,7 +263,7 @@ const SelectedWorks = () => {
     }
 
     // Mobile line/labels are driven by the native scroll effect below.
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < LG) return;
 
     const kineticWheel = kineticWheelRef.current;
     if (kineticWheel) {
@@ -299,7 +300,7 @@ const SelectedWorks = () => {
       voidContainerRef.current.style.transform = "";
       voidContainerRef.current.style.transformOrigin = "";
     }
-    if (kineticWheelRef.current && window.innerWidth >= 1024)
+    if (kineticWheelRef.current && window.innerWidth >= LG)
       kineticWheelRef.current.style.transform = "";
 
     if (threadPathRef.current && isMobile) {
@@ -356,7 +357,7 @@ const SelectedWorks = () => {
   // padding) is the scrub range. window scroll, not Lenis — syncTouch: false
   // still emits, but this does not depend on that.
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1023px)");
+    const mq = window.matchMedia(belowLgQuery);
     const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
     let raf = 0;
 
@@ -483,7 +484,7 @@ const SelectedWorks = () => {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("orientationchange", onResize);
       cancelAnimationFrame(raf);
-      if (window.innerWidth >= 1024) {
+      if (window.innerWidth >= LG) {
         const wheel = kineticWheelRef.current;
         if (!wheel) return;
         wheel.style.opacity = "0";

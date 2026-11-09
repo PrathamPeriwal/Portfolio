@@ -46,14 +46,12 @@
     padding: 0 !important;
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
   }
 
   #root {
     margin: 0;
     padding: 0;
     width: 100%;
-    overflow-x: clip;
   }
 
   /* Portfolio uses font-sans explicitly on all headings; this rule is intentionally not applied */

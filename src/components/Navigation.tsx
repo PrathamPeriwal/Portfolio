@@ -175,7 +175,7 @@ const Navigation = () => {
                   initial="closed"
                   animate="open"
                   exit="closed"
-                  className="text-base md:text-lg font-medium text-white hover:opacity-40"
+                  className="text-base md:text-lg font-medium text-white hover:opacity-40 max-lg:active:opacity-40 max-lg:inline-flex max-lg:items-center max-lg:justify-center max-lg:min-h-11 max-lg:min-w-11"
                 >
                   {item.label}
                 </motion.a>
@@ -206,9 +206,9 @@ const Navigation = () => {
                     initial="closed"
                     animate="open"
                     exit="closed"
-                    className="flex items-baseline justify-between group cursor-pointer"
+                    className="flex items-baseline justify-between group cursor-pointer max-lg:min-h-11 max-lg:items-center"
                   >
-                    <span className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white uppercase tracking-tight leading-none group-hover:translate-x-3 transition-transform duration-300 ease-out">
+                    <span className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white uppercase tracking-tight leading-none group-hover:translate-x-3 max-lg:group-active:translate-x-3 transition-transform duration-300 ease-out">
                       {item.label}
                     </span>
                     <span className="text-[10px] md:text-xs text-white/55 font-mono tracking-widest self-start mt-1 md:mt-2">
