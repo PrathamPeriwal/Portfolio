@@ -40,7 +40,7 @@ const projects = [
       "Developed the official website with secure event registration, automated QR-based E-Pass generation and verification, interactive experiences and an alumni networking system.",
     links: {
       live: "https://ecesocbitm.in/",
-      code: "https://github.com/yourusername/ecesoc",
+      code: "https://github.com/ecesoc/website",
     },
     image: "/ecesoc.png",
     width: 1903,

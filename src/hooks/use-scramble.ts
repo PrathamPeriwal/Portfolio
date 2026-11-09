@@ -95,6 +95,8 @@ export interface ScrambleOptions {
   pool?: "dense" | "light" | "tagline";
   playOnMount?: boolean;
   mountDelay?: number;
+  /** Runs after the scramble writes the plain string back. */
+  onSettle?: (el: HTMLElement) => void;
 }
 
 export function useScramble(original: string, options: ScrambleOptions = {}) {
@@ -106,6 +108,8 @@ export function useScramble(original: string, options: ScrambleOptions = {}) {
   } = options;
 
   const ref = useRef<HTMLElement | null>(null);
+  const settleRef = useRef(options.onSettle);
+  settleRef.current = options.onSettle;
   const cancelRef = useRef<(() => void) | null>(null);
   const runningRef = useRef(false);
   const charPool =
@@ -123,6 +127,7 @@ export function useScramble(original: string, options: ScrambleOptions = {}) {
     cancelRef.current = runScramble(el, original, travelMs, charPool, () => {
       runningRef.current = false;
       cancelRef.current = null;
+      settleRef.current?.(el);
     });
   }, [original, travelMs, charPool]);
 

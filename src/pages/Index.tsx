@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, useSpring, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { Github, Linkedin, Instagram, Mail } from "lucide-react";
 import { useScramble } from "@/hooks/use-scramble";
-import { lgQuery } from "@/lib/breakpoints";
+import { belowLgQuery, lgQuery } from "@/lib/breakpoints";
 
 import About from "./About";
 import Experience from "./Experience";
@@ -161,7 +161,7 @@ const MobileSocialStrip = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
-      className="flex flex-row items-center gap-3 md:hidden"
+      className="hero-socials flex w-full flex-row items-center justify-between md:hidden"
     >
       {socials.map(({ label, icon: Icon, href }) => (
         <a
@@ -182,13 +182,36 @@ const MobileSocialStrip = () => {
 
 const FIRST_NAME = 'Pratham';
 const LAST_NAME  = 'Periwal';
-const TAGLINE    = 'Software Engineer designing intelligent products where scalable architecture, applied AI, and exceptional user experiences work as one.';
+const TAGLINE_PARTS: { text: string; em?: boolean }[] = [
+  { text: "Software Engineer designing " },
+  { text: "intelligent products", em: true },
+  { text: " where " },
+  { text: "scalable architecture", em: true },
+  { text: ", " },
+  { text: "applied AI", em: true },
+  { text: ", and " },
+  { text: "exceptional user experiences", em: true },
+  { text: " work as one." },
+];
+const TAGLINE = TAGLINE_PARTS.map((part) => part.text).join("");
 
 const HeroContent = () => {
   // Three independent scramble instances
   const { ref: firstRef } = useScramble(FIRST_NAME, { travelMs: 620, pool: 'dense', playOnMount: true, mountDelay: 300 });
   const { ref: lastRef } = useScramble(LAST_NAME, { travelMs: 580, pool: 'dense', playOnMount: true, mountDelay: 640 });
-  const { ref: taglineRef, trigger: triggerTagline } = useScramble(TAGLINE, { travelMs: 900, pool: 'tagline', playOnMount: false });
+  const { ref: taglineRef, trigger: triggerTagline } = useScramble(TAGLINE, {
+    travelMs: 900,
+    pool: 'tagline',
+    playOnMount: false,
+    onSettle: (el) => {
+      // Scramble finishes by flattening the paragraph. Put the emphasis
+      // spans back below lg; desktop stays the plain string.
+      if (!window.matchMedia(belowLgQuery).matches) return;
+      el.innerHTML = TAGLINE_PARTS.map((part) =>
+        part.em ? `<span class="hero-em">${part.text}</span>` : part.text
+      ).join("");
+    },
+  });
 
   useEffect(() => {
     if (window.matchMedia('(hover: none)').matches) return;
@@ -223,8 +246,8 @@ const HeroContent = () => {
         <div className="mt-4 h-[2px] w-12 bg-white lg:hidden" />
       </motion.div>
 
-      {/* B. Tagline + role pills. lg:contents so the desktop row can pair pills with CTAs */}
-      <div className="hero-b flex flex-col gap-4">
+      {/* B. Tagline. lg:contents so the desktop row can pair pills with CTAs */}
+      <div className="hero-b flex flex-col">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -235,10 +258,21 @@ const HeroContent = () => {
             ref={taglineRef as React.RefObject<HTMLParagraphElement>}
             className="font-serif italic text-[clamp(1.05rem,4.8vw,1.5rem)] lg:text-2xl font-normal text-white/90 leading-[1.45] tracking-wide text-left cursor-default select-none"
           >
-            {TAGLINE}
+            {TAGLINE_PARTS.map((part) =>
+              part.em ? (
+                <span key={part.text} className="hero-em">
+                  {part.text}
+                </span>
+              ) : (
+                part.text
+              )
+            )}
           </p>
         </motion.div>
+      </div>
 
+      {/* C. Role pills, social icons (below md), CTAs */}
+      <div className="hero-c flex flex-col gap-4">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -254,10 +288,6 @@ const HeroContent = () => {
             </span>
           ))}
         </motion.div>
-      </div>
-
-      {/* C. Social icons (below md) + CTAs */}
-      <div className="hero-c flex flex-col gap-4">
         <MobileSocialStrip />
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -269,7 +299,7 @@ const HeroContent = () => {
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative overflow-hidden border border-white px-3 py-3 md:px-6 md:py-3 max-lg:min-h-[54px] max-lg:flex-1 max-lg:basis-[calc(50%-0.375rem)] max-lg:min-w-[9.25rem] flex items-center justify-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white px-3 py-3 md:px-6 md:py-3 max-lg:min-h-14 max-lg:flex-1 flex items-center justify-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="View Resume"
           >
             <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
@@ -286,7 +316,7 @@ const HeroContent = () => {
 
           <a
             href="#contact"
-            className="group relative overflow-hidden border border-white/30 px-3 py-3 md:px-6 md:py-3 max-lg:min-h-[54px] max-lg:flex-1 max-lg:basis-[calc(50%-0.375rem)] max-lg:min-w-[9.25rem] flex items-center justify-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white/30 px-3 py-3 md:px-6 md:py-3 max-lg:min-h-14 max-lg:flex-1 flex items-center justify-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="Contact Me"
           >
             <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
