@@ -11,7 +11,7 @@ const projects = [
     description:
       "An AI-powered personal finance platform that automates expense tracking, budgeting, and receipt scanning with real-time analytics, recurring transactions, and intelligent financial insights.",
     links: { live: "https://ledgerly-finance-one.vercel.app/", code: "https://github.com/PrathamPeriwal/Ledgerly" },
-    image: "/Ledgerly.png",
+    image: "/ledgerly.png",
     cta: "Live Project",
   },
   {

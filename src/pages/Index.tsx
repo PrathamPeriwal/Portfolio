@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useSpring, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { Github, Linkedin, Instagram, Mail } from "lucide-react";
 import { useScramble } from "@/hooks/use-scramble";
@@ -130,8 +130,14 @@ const MobileSocialStrip = () => {
       className="flex flex-col items-center gap-6"
     >
       {socials.map(({ label, icon: Icon, href }) => (
-        <a key={label} href={href} target={href.startsWith("mailto") ? "_self" : "_blank"} rel="noopener noreferrer"
-          className="text-white hover:opacity-75 transition-opacity duration-300 block">
+        <a
+          key={label}
+          href={href}
+          target={href.startsWith("mailto") ? "_self" : "_blank"}
+          rel="noopener noreferrer"
+          aria-label={label}
+          className="text-white hover:opacity-75 transition-opacity duration-300 inline-flex items-center justify-center p-[13px]"
+        >
           <Icon size={18} strokeWidth={2.5} />
         </a>
       ))}
@@ -165,7 +171,7 @@ const HeroContent = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="font-sans font-bold text-7xl md:text-8xl lg:text-[9rem] xl:text-[11rem] leading-[0.85] tracking-tighter text-white text-left pt-4">
+        <h1 className="font-sans font-bold text-[clamp(2.25rem,calc((100vw-3rem)/4.15),4.5rem)] md:text-[clamp(3rem,calc((100vw-8rem)/4.15),6rem)] lg:text-[9rem] xl:text-[11rem] leading-[0.85] tracking-tighter text-white text-left pt-4">
           <span
             ref={firstRef as React.RefObject<HTMLSpanElement>}
             className="block cursor-default select-none"
@@ -186,7 +192,7 @@ const HeroContent = () => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-        className="w-full pr-[70px] md:pr-[120px] mt-2 md:mt-4"
+        className="w-full md:pr-[120px] mt-2 md:mt-4"
       >
         <div className="w-12 h-[2px] bg-white mb-4 md:hidden" />
         <p
@@ -231,12 +237,12 @@ const HeroContent = () => {
             className="group relative overflow-hidden border border-white px-5 py-3 md:px-6 md:py-3 flex items-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="View Resume"
           >
-            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out" />
-            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black transition-colors duration-300 z-10 whitespace-nowrap">
+            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
+            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
               View Resume
             </span>
             <svg
-              className="relative w-3 h-3 text-white group-hover:text-black transition-colors duration-300 z-10"
+              className="relative w-3 h-3 text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10"
               viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5"
             >
               <path d="M1 6h10M6 1l5 5-5 5" />
@@ -246,15 +252,15 @@ const HeroContent = () => {
           {/* Secondary CTA */}
           <a
             href="#contact"
-            className="group relative overflow-hidden border border-white/30 px-5 py-3 md:px-6 md:py-3 flex items-center gap-2 md:gap-3 hover:border-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white/30 px-5 py-3 md:px-6 md:py-3 flex items-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="Contact Me"
           >
-            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out" />
-            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black transition-colors duration-300 z-10 whitespace-nowrap">
+            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
+            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
               Contact Me
             </span>
             <svg
-              className="relative w-3 h-3 text-white group-hover:text-black transition-colors duration-300 z-10"
+              className="relative w-3 h-3 text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10"
               viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5"
             >
               <path d="M1 6h10M6 1l5 5-5 5" />
@@ -268,11 +274,26 @@ const HeroContent = () => {
 
 const Index = () => {
   const footerContainerRef = useRef<HTMLDivElement>(null);
+  const [footerReveal, setFooterReveal] = useState(
+    () => window.matchMedia("(min-width: 1024px)").matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setFooterReveal(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: footerContainerRef,
     offset: ["start end", "end end"]
   });
 
+  // Shell is exactly one viewport tall and clips. y:-50%→0 slides the footer
+  // up inside that window. Below lg the shell is in-flow, so this shift would
+  // pull the footer over the contact section.
   const footerY = useTransform(scrollYProgress, [0, 1], ["-50%", "0%"]);
 
   return (
@@ -287,7 +308,7 @@ const Index = () => {
       </div>
 
       {/* Hero */}
-      <section className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden">
+      <section className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-visible">
         <AvailabilityBadge />
         <div className="hidden lg:block"><SplashCursor /></div>
 
@@ -329,8 +350,8 @@ const Index = () => {
       </div>
 
       {/* Parallax Footer Reveal Stack */}
-      <div ref={footerContainerRef} className="relative z-0 h-screen w-full overflow-hidden bg-black text-white">
-        <motion.div style={{ y: footerY }} className="h-full w-full">
+      <div ref={footerContainerRef} className="relative z-0 h-screen w-full overflow-hidden bg-black text-white max-lg:h-auto max-lg:overflow-x-clip max-lg:overflow-y-visible">
+        <motion.div style={footerReveal ? { y: footerY } : undefined} className="h-full w-full max-lg:h-auto">
           <Footer />
         </motion.div>
       </div>

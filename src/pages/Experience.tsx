@@ -165,12 +165,11 @@ const ExperienceCard = ({
         {/* LEFT: Year + Duration */}
         <div className="exp-year flex flex-col items-center justify-center gap-0 opacity-0 md:border-r border-black/10 md:pr-12 lg:pr-20">
           <span
-            className="leading-none tracking-tight select-none text-center"
+            className="leading-none tracking-tight select-none text-center text-[clamp(4.5rem,28vw,320px)] lg:text-[clamp(180px,24vw,320px)]"
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontStyle: "italic",
               fontWeight: 300,
-              fontSize: "clamp(180px, 24vw, 320px)",
               color: "#777777",
               lineHeight: 0.85,
               fontVariantNumeric: "lining-nums",

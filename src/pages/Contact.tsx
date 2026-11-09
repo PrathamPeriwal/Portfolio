@@ -75,7 +75,7 @@ const Contact = () => {
   };
 
   return (
-    <section className="h-screen w-full bg-white text-black font-sans px-4 md:px-8 lg:px-12 overflow-hidden flex items-center justify-center relative">
+    <section className="h-screen w-full bg-white text-black font-sans px-4 md:px-8 lg:px-12 overflow-hidden flex items-center justify-center relative max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-visible max-lg:py-28">
       <motion.div
         className="grid grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-16 max-w-[1400px] w-full mx-auto"
         variants={containerVariants}
@@ -111,18 +111,18 @@ const Contact = () => {
               <div className="flex flex-col gap-1">
                 <label htmlFor="firstName" className="text-xs font-bold uppercase tracking-wider">First Name*</label>
                 <input
-                  type="text" id="firstName" name="firstName"
+                  type="text" id="firstName" name="firstName" autoComplete="given-name"
                   value={formData.firstName} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
               <div className="flex flex-col gap-1">
                 <label htmlFor="lastName" className="text-xs font-bold uppercase tracking-wider">Last Name*</label>
                 <input
-                  type="text" id="lastName" name="lastName"
+                  type="text" id="lastName" name="lastName" autoComplete="family-name"
                   value={formData.lastName} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
@@ -133,9 +133,9 @@ const Contact = () => {
               <div className="flex flex-col gap-1">
                 <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider">Email*</label>
                 <input
-                  type="email" id="email" name="email"
+                  type="email" id="email" name="email" autoComplete="email"
                   value={formData.email} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
@@ -144,7 +144,7 @@ const Contact = () => {
                 <input
                   type="text" id="subject" name="subject"
                   value={formData.subject} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
@@ -156,7 +156,7 @@ const Contact = () => {
               <textarea
                 id="message" name="message" rows={3}
                 value={formData.message} onChange={handleChange}
-                className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors resize-none"
+                className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors resize-none"
                 required
               />
             </div>

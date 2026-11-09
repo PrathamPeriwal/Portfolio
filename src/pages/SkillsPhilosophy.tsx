@@ -7,6 +7,12 @@ const marqueeKeyframe = `
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
   }
+  .skill-row-static { display: flex; }
+  .skill-row-marquee { display: none; }
+  @media (hover: hover) and (min-width: 1024px) {
+    .skill-row-static { display: none; }
+    .skill-row-marquee { display: flex; }
+  }
 `;
 
 // ─── Data ──────────────────────────────────────────────────────────────────────
@@ -109,13 +115,58 @@ const SkillRow = ({
   const duration = category.skills.length * 2.2;
 
   return (
+    <>
     <div
+      className="skill-row-static px-6 md:px-12 lg:px-16"
+      style={{
+        borderBottom: "1px solid black",
+        flexDirection: "column",
+        gap: "14px",
+        paddingTop: "18px",
+        paddingBottom: "18px",
+        background: "white",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "16px" }}>
+        <span
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "clamp(0.82rem, 1.25vw, 1rem)",
+            fontWeight: 500,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            color: "#0a0a0a",
+            userSelect: "none",
+          }}
+        >
+          {category.title}
+        </span>
+        <span
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "0.65rem",
+            letterSpacing: "0.08em",
+            color: "#bbb",
+            textTransform: "uppercase",
+            flexShrink: 0,
+          }}
+        >
+          {category.skills.length}
+        </span>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+        {category.skills.map((skill) => (
+          <Pill key={skill} label={skill} />
+        ))}
+      </div>
+    </div>
+    <div
+      className="skill-row-marquee"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         borderBottom: "1px solid black",
         height: "68px",
-        display: "flex",
         alignItems: "center",
         background: hovered ? "#F8F8F8" : "white",
         transition: "background 0.25s ease",
@@ -257,6 +308,7 @@ const SkillRow = ({
         </span>
       </div>
     </div>
+    </>
   );
 };
 

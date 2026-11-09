@@ -83,7 +83,7 @@ const Footer = () => {
   return (
     <footer
       ref={footerRef}
-      className="relative bg-black text-white font-sans h-screen flex flex-col overflow-hidden"
+      className="relative bg-black text-white font-sans h-screen flex flex-col overflow-hidden max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-x-clip max-lg:overflow-y-visible"
     >
       {/* Radial depth glow */}
       <div
@@ -161,10 +161,10 @@ const Footer = () => {
             </p>
 
             <div className="flex flex-col gap-0.5 mt-1">
-              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/25">
+              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/70 lg:text-white/25">
                 Visakhapatnam, India
               </p>
-              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/25">
+              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/70 lg:text-white/25">
                 Remote&nbsp;·&nbsp;Worldwide
               </p>
             </div>
@@ -179,7 +179,7 @@ const Footer = () => {
             variants={stagger}
             className="flex flex-col gap-4"
           >
-            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/30 font-medium">
+            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/75 lg:text-white/30 font-medium">
               Connect
             </p>
             <div className="flex flex-col gap-4">
@@ -203,7 +203,7 @@ const Footer = () => {
             variants={stagger}
             className="flex flex-col gap-4"
           >
-            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/30 font-medium">
+            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/75 lg:text-white/30 font-medium">
               Built with
             </p>
 
@@ -213,7 +213,7 @@ const Footer = () => {
               Lenis&nbsp;•&nbsp;Tailwind CSS
             </p>
 
-            <p className="font-serif italic text-xs text-white/30 leading-relaxed max-w-[28ch]">
+            <p className="font-serif italic text-xs text-white/75 lg:text-white/30 leading-relaxed max-w-[28ch]">
               Crafted with attention to performance, motion, accessibility, and
               developer experience.
             </p>
