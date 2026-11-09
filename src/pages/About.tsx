@@ -13,7 +13,7 @@ const SOCIALS = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/prathamperiwal/"  },
 ];
 
-const About = () => {
+const About = ({ id }: { id?: string }) => {
   const [vh, setVh] = useState(
     typeof window !== "undefined" ? window.innerHeight : 800
   );
@@ -43,24 +43,27 @@ const About = () => {
   const opacity5 = useTransform(scrollY, [vh * 0.25,  vh * 0.60], [0, 1]);
 
   return (
-    <section className="relative z-10 min-h-screen w-full bg-white text-black font-sans px-6 md:px-12 lg:px-20 flex items-center py-16 lg:py-20">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-x-5 lg:gap-x-5 gap-y-16 w-full max-w-[1600px] mx-auto">
+    <section
+      id={id}
+      className="relative z-10 w-full bg-white text-black font-sans px-6 md:px-12 lg:px-20 flex items-center pt-28 pb-16 md:pt-32 lg:min-h-screen lg:py-20"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-x-5 lg:gap-x-5 gap-y-16 w-full max-w-[1600px] mx-auto min-w-0">
 
         {/* LEFT COLUMN (50%)  */}
         <div className="md:col-span-6 lg:col-span-6 flex flex-col gap-8 pr-0 lg:pr-8">
 
           {/* Stats Grid (2x2) */}
           <motion.div style={{ y: y1, opacity: opacity1 }}>
-            <div className="grid grid-cols-2 gap-x-10 gap-y-12 w-full">
-              {STATS.map((stat, i) => (
+            <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:gap-x-10 md:gap-y-12 w-full min-w-0">
+              {STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="flex flex-col gap-2 pb-5 border-b border-black/20 w-full"
+                  className="flex flex-col gap-2 pb-5 border-b border-black/20 min-w-0"
                 >
-                  <span className="font-sans font-black text-6xl md:text-7xl lg:text-[5.5rem] tracking-tighter leading-none text-black drop-shadow-sm">
+                  <span className="font-sans font-black text-[clamp(2.25rem,13vw,3.75rem)] md:text-5xl lg:text-[5.5rem] tracking-tighter leading-none text-black drop-shadow-sm">
                     {stat.value}
                   </span>
-                  <span className="font-sans text-[9px] lg:text-[10px] font-bold tracking-[0.2em] uppercase text-black/50 leading-snug whitespace-nowrap mt-1">
+                  <span className="font-sans text-[11px] lg:text-[10px] font-bold tracking-[0.2em] uppercase text-black/50 leading-snug lg:whitespace-nowrap mt-1">
                     {stat.label}
                   </span>
                 </div>

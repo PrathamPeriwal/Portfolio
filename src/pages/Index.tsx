@@ -302,10 +302,13 @@ const Index = () => {
       <CursorFollower />
       <Navigation />
 
-      {/* Fixed background About section */}
-      <div className="fixed inset-0 z-0 bg-white text-black">
-        <About />
-      </div>
+      {/* lg+: fixed About sits under the hero and is revealed by the spacer.
+          Below lg it is not mounted, so it cannot show through under the footer. */}
+      {footerReveal && (
+        <div className="fixed inset-0 z-0 bg-white text-black">
+          <About />
+        </div>
+      )}
 
       {/* Hero */}
       <section className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-visible">
@@ -326,7 +329,11 @@ const Index = () => {
       </section>
 
       <div className="relative z-20 w-full bg-transparent">
-        <div id="about" className="h-screen w-full pointer-events-none" />
+        {footerReveal ? (
+          <div id="about" className="h-screen w-full pointer-events-none" />
+        ) : (
+          <About id="about" />
+        )}
 
         <div id="experience" className="relative z-20">
           <Experience />
@@ -350,7 +357,7 @@ const Index = () => {
       </div>
 
       {/* Parallax Footer Reveal Stack */}
-      <div ref={footerContainerRef} className="relative z-0 h-screen w-full overflow-hidden bg-black text-white max-lg:h-auto max-lg:overflow-x-clip max-lg:overflow-y-visible">
+      <div ref={footerContainerRef} className="relative z-[1] h-screen w-full overflow-hidden bg-black text-white max-lg:h-auto max-lg:overflow-x-clip max-lg:overflow-y-visible">
         <motion.div style={footerReveal ? { y: footerY } : undefined} className="h-full w-full max-lg:h-auto">
           <Footer />
         </motion.div>
