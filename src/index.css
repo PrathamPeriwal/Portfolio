@@ -64,3 +64,105 @@
     font-family: var(--font-serif);
   }
 }
+
+/* Below lg the hero fills the screen. svh, not dvh: grouped space-between
+   would jump when the mobile URL bar collapses. lg+ keeps the utility classes. */
+@media (max-width: 1023px) {
+  #hero {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+    padding-top: clamp(5.5rem, 14svh, 8rem);
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  #hero h1 {
+    font-size: clamp(3.5rem, 22vw, 7rem);
+  }
+
+  #hero .hero-stack {
+    margin-top: 0;
+    flex: 1 1 auto;
+    justify-content: space-between;
+    gap: clamp(1.25rem, 4svh, 2.75rem);
+    min-height: calc(
+      100svh - clamp(5.5rem, 14svh, 8rem) - max(1.5rem, env(safe-area-inset-bottom))
+    );
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  #hero h1 {
+    font-size: clamp(7rem, calc(7rem + (100vw - 48rem) * 0.125), 9rem);
+  }
+}
+
+/* Desktop row: pills left, CTAs right, same spacing as the old flex row. */
+@media (min-width: 1024px) {
+  #hero .hero-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1.5rem;
+    row-gap: 0;
+    margin-top: auto;
+  }
+
+  /* Match the pre-change used line-height (normal ≈ 32px). leading-relaxed
+     computes to 39px and shifts the name up. */
+  #hero .hero-tagline p {
+    line-height: normal;
+  }
+
+  #hero .hero-a,
+  #hero .hero-tagline {
+    grid-column: 1 / -1;
+  }
+
+  #hero .hero-b,
+  #hero .hero-c {
+    display: contents;
+  }
+
+  #hero .hero-pills {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+  }
+
+  #hero .hero-ctas {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end;
+    justify-self: end;
+  }
+}
+
+/* Desktop scrollbar. scrollbar-color where it exists; webkit only where it
+   does not, so Chrome 121+ does not apply both. Phones keep overlay scrollbars. */
+@media (min-width: 1024px) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #8d8d8d #000000;
+  }
+}
+
+@supports not (scrollbar-color: auto) {
+  @media (min-width: 1024px) {
+    html::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    html::-webkit-scrollbar-track {
+      background: #000000;
+    }
+
+    html::-webkit-scrollbar-thumb {
+      background: #8d8d8d;
+      border-radius: 8px;
+    }
+
+    html::-webkit-scrollbar-thumb:hover {
+      background: #c4c4c4;
+    }
+  }
+}

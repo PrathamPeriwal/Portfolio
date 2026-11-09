@@ -161,7 +161,7 @@ const MobileSocialStrip = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
-      className="flex flex-col items-center gap-6"
+      className="flex flex-row items-center gap-3 md:hidden"
     >
       {socials.map(({ label, icon: Icon, href }) => (
         <a
@@ -170,7 +170,7 @@ const MobileSocialStrip = () => {
           target={href.startsWith("mailto") ? "_self" : "_blank"}
           rel="noopener noreferrer"
           aria-label={label}
-          className="text-white hover:opacity-75 active:opacity-75 transition-opacity duration-300 inline-flex items-center justify-center min-h-11 min-w-11"
+          className="text-white hover:opacity-75 active:opacity-75 transition-opacity duration-300 inline-flex h-11 w-11 items-center justify-center"
         >
           <Icon size={18} strokeWidth={2.5} />
         </a>
@@ -197,15 +197,16 @@ const HeroContent = () => {
   }, [triggerTagline]);
 
   return (
-    <div className="z-10 mt-auto flex flex-col relative">
+    <div className="hero-stack z-10 mt-auto flex flex-col relative">
       <SocialStrip />
-      {/* Heading block */}
+      {/* A. Name + underline. Underline stays off at lg+ */}
       <motion.div
+        className="hero-a"
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="font-sans font-bold text-[clamp(2.25rem,calc((100vw-3rem)/4.15),4.5rem)] md:text-[clamp(3rem,calc((100vw-8rem)/4.15),6rem)] lg:text-[9rem] xl:text-[11rem] leading-[0.85] tracking-tighter text-white text-left pt-4">
+        <h1 className="font-sans font-bold lg:text-[9rem] xl:text-[11rem] leading-[0.92] lg:leading-[0.85] tracking-tighter text-white text-left lg:pt-4">
           <span
             ref={firstRef as React.RefObject<HTMLSpanElement>}
             className="block cursor-default select-none"
@@ -219,60 +220,60 @@ const HeroContent = () => {
             {LAST_NAME}
           </span>
         </h1>
+        <div className="mt-4 h-[2px] w-12 bg-white lg:hidden" />
       </motion.div>
 
-      {/* Tagline Block */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-        className="w-full md:pr-[120px] mt-2 md:mt-4"
-      >
-        <div className="w-12 h-[2px] bg-white mb-4 md:hidden" />
-        <p
-          ref={taglineRef as React.RefObject<HTMLParagraphElement>}
-          className="font-serif italic text-lg md:text-xl lg:text-2xl font-normal text-white/90 leading-relaxed tracking-wide text-left cursor-default select-none"
+      {/* B. Tagline + role pills. lg:contents so the desktop row can pair pills with CTAs */}
+      <div className="hero-b flex flex-col gap-4">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
+          className="hero-tagline w-full md:pr-[120px] lg:mt-4"
         >
-          {TAGLINE}
-        </p>
-      </motion.div>
+          <p
+            ref={taglineRef as React.RefObject<HTMLParagraphElement>}
+            className="font-serif italic text-[clamp(1.05rem,4.8vw,1.5rem)] lg:text-2xl font-normal text-white/90 leading-[1.45] tracking-wide text-left cursor-default select-none"
+          >
+            {TAGLINE}
+          </p>
+        </motion.div>
 
-      {/* Pills and CTAs row */}
-      <div className="flex flex-col md:flex-row w-full justify-between items-start md:items-end gap-6 mt-6 md:mt-8 mb-2 pr-0">
-        {/* Expertise Tags */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
-          className="flex flex-wrap gap-2 md:gap-3"
+          className="hero-pills flex flex-wrap gap-[10px] md:gap-3 lg:mt-8 lg:mb-2"
         >
           {['SOFTWARE DEVELOPER', 'SYSTEMS ENGINEER', 'AI/ML ENGINEER', 'CLOUD'].map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1.5 md:px-4 md:py-2 border border-white/20 rounded-full font-sans text-[9px] md:text-[10px] font-medium tracking-[0.2em] text-white/70 uppercase hover:bg-white hover:text-black transition-colors duration-300 cursor-default select-none whitespace-nowrap"
+              className="px-[14px] py-2 md:px-4 md:py-2 border border-white/20 rounded-full font-sans text-[11px] md:text-[10px] font-medium tracking-[0.2em] text-white/70 uppercase hover:bg-white hover:text-black transition-colors duration-300 cursor-default select-none whitespace-nowrap"
             >
               {tag}
             </span>
           ))}
         </motion.div>
+      </div>
 
-        {/* CTA Buttons */}
+      {/* C. Social icons (below md) + CTAs */}
+      <div className="hero-c flex flex-col gap-4">
+        <MobileSocialStrip />
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-          className="flex flex-row flex-wrap items-center gap-3"
+          className="hero-ctas flex flex-row flex-wrap items-center gap-3 max-lg:w-full lg:mt-8 lg:mb-2"
         >
-          {/* Primary CTA */}
           <a
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative overflow-hidden border border-white px-5 py-3 md:px-6 md:py-3 max-lg:min-h-11 flex items-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white px-3 py-3 md:px-6 md:py-3 max-lg:min-h-[54px] max-lg:flex-1 max-lg:basis-[calc(50%-0.375rem)] max-lg:min-w-[9.25rem] flex items-center justify-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="View Resume"
           >
             <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
-            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
+            <span className="relative font-sans font-black text-[12px] md:text-[10px] tracking-[0.12em] lg:tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
               View Resume
             </span>
             <svg
@@ -283,14 +284,13 @@ const HeroContent = () => {
             </svg>
           </a>
 
-          {/* Secondary CTA */}
           <a
             href="#contact"
-            className="group relative overflow-hidden border border-white/30 px-5 py-3 md:px-6 md:py-3 max-lg:min-h-11 flex items-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white/30 px-3 py-3 md:px-6 md:py-3 max-lg:min-h-[54px] max-lg:flex-1 max-lg:basis-[calc(50%-0.375rem)] max-lg:min-w-[9.25rem] flex items-center justify-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="Contact Me"
           >
             <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
-            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
+            <span className="relative font-sans font-black text-[12px] md:text-[10px] tracking-[0.12em] lg:tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
               Contact Me
             </span>
             <svg
@@ -345,20 +345,9 @@ const Index = () => {
       )}
 
       {/* Hero */}
-      <section id="hero" className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-visible">
+      <section id="hero" className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden">
         <AvailabilityBadge />
         <div className="hidden lg:block"><SplashCursor /></div>
-
-        {/* Mobile Midpoint Buffer*/}
-        <div className="h-[32px] w-full md:hidden" />
-
-        {/* Dynamic Centering Container for Mobile Socials */}
-        <div className="flex-1 flex flex-col items-end justify-center md:hidden pr-0 z-10 pointer-events-none">
-          <div className="pointer-events-auto">
-            <MobileSocialStrip />
-          </div>
-        </div>
-
         <HeroContent />
       </section>
 

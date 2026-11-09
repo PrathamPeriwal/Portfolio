@@ -13,6 +13,8 @@ const projects = [
       "An AI-powered personal finance platform that automates expense tracking, budgeting, and receipt scanning with real-time analytics, recurring transactions, and intelligent financial insights.",
     links: { live: "https://ledgerly-finance-one.vercel.app/", code: "https://github.com/PrathamPeriwal/Ledgerly" },
     image: "/ledgerly.png",
+    width: 1914,
+    height: 946,
     cta: "Live Project",
   },
   {
@@ -26,6 +28,8 @@ const projects = [
       code: "https://github.com/PrathamPeriwal/Linguae",
     },
     image: "/linguae.png",
+    width: 1879,
+    height: 940,
     cta: "Live Project",
   },
   {
@@ -38,7 +42,9 @@ const projects = [
       live: "https://ecesocbitm.in/",
       code: "https://github.com/yourusername/ecesoc",
     },
-    image: "./ecesoc.png",
+    image: "/ecesoc.png",
+    width: 1903,
+    height: 943,
     cta: "Live Project",
   },
   {
@@ -51,7 +57,9 @@ const projects = [
       live: "https://www.prathamperiwal.dev/",
       code: "https://github.com/PrathamPeriwal/Portfolio",
     },
-    image: "./portfolio.png",
+    image: "/portfolio.png",
+    width: 1870,
+    height: 862,
     cta: "Live Project",
   },
 ];
@@ -94,7 +102,10 @@ const ScrollStackCard = ({ project, index }: ScrollStackCardProps) => {
       <div className="content-grid">
         <img
           src={project.image}
-          className="main-image w-full h-auto object-contain"
+          width={project.width}
+          height={project.height}
+          loading="lazy"
+          className="main-image"
           alt={project.title}
           onLoad={() => window.dispatchEvent(new Event("resize"))}
         />
