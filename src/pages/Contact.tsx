@@ -75,7 +75,7 @@ const Contact = () => {
   };
 
   return (
-    <section className="h-screen w-full bg-white text-black font-sans px-4 md:px-8 lg:px-12 overflow-hidden flex items-center justify-center relative max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-visible max-lg:py-28">
+    <section className="h-screen w-full bg-white text-black font-sans px-4 md:px-8 lg:px-12 overflow-hidden flex items-center justify-center relative max-lg:h-auto max-lg:min-h-0 max-lg:items-start max-lg:overflow-visible max-lg:py-16">
       <motion.div
         className="grid grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-16 max-w-[1400px] w-full mx-auto"
         variants={containerVariants}
@@ -84,7 +84,7 @@ const Contact = () => {
         viewport={{ once: true }}
       >
         {/* Left Column */}
-        <div className="lg:col-span-7 flex flex-col justify-between h-full py-2">
+        <div className="lg:col-span-7 flex flex-col justify-between h-full py-2 max-lg:py-0">
           <motion.div variants={itemVariants} className="mb-8 lg:mb-0">
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-left">
               Contact <br />

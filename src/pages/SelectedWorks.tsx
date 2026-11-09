@@ -167,7 +167,11 @@ const SelectedWorks = () => {
     const containerHeight = window.innerHeight;
     const firstCardHeight = cards[0].offsetHeight;
 
-    const stackPositionPx = (containerHeight - firstCardHeight) / 2;
+    // Below lg the card pins 96px down, under the hamburger. Desktop stays centered.
+    const stackPositionPx =
+      window.innerWidth < LG
+        ? 96
+        : (containerHeight - firstCardHeight) / 2;
     const scaleEndPositionPx =
       stackPositionPx -
       (BASE_CONFIG.stackPosition - BASE_CONFIG.scaleEndPosition) *
@@ -509,7 +513,7 @@ const SelectedWorks = () => {
 
   return (
     <section className="min-h-screen bg-black text-white font-sans relative">
-      <div className="w-full h-[25vh] md:h-[25vh] lg:h-[70vh] border-b border-white/20 overflow-hidden flex items-center relative z-10 bg-black">
+      <div className="w-full h-auto py-8 lg:h-[70vh] lg:py-0 border-b border-white/20 overflow-hidden flex items-start lg:items-center relative z-10 bg-black">
         <div className="marquee-selected-works">
           <div className="marquee-selected-works__track">
             {[0, 1, 2, 3].map((blockIndex) => (

@@ -322,8 +322,8 @@ const SkillsPhilosophy = () => {
   return (
     <>
       <style>{marqueeKeyframe}</style>
-      <section className="min-h-screen bg-white text-black font-sans flex flex-col justify-center">
-        <div className="w-full px-6 md:px-12 lg:px-16 pt-24 pb-6 md:pt-12 md:pb-6 bg-white z-10 md:flex-shrink-0">
+      <section className="min-h-screen max-lg:min-h-0 bg-white text-black font-sans flex flex-col justify-center max-lg:justify-start">
+        <div className="w-full px-6 md:px-12 lg:px-16 pt-16 pb-6 md:pt-12 md:pb-6 bg-white z-10 md:flex-shrink-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -346,7 +346,7 @@ const SkillsPhilosophy = () => {
         </div>
 
         {/* Skills Rows */}
-        <div className="w-full border-t border-black mt-16">
+        <div className="w-full border-t border-black mt-7 lg:mt-16">
           {skillCategories.map((category) => (
             <SkillRow key={category.title} category={category} />
           ))}

@@ -65,6 +65,22 @@
   align-items: center;
 }
 
+@media (max-width: 1023.98px) {
+  .scroll-stack-inner {
+    padding-top: 2rem;
+  }
+
+  .marquee-selected-works,
+  .marquee-selected-works__track,
+  .marquee-selected-works__segment {
+    align-items: flex-start;
+  }
+
+  .marquee-selected-works__dash {
+    line-height: 0.8;
+  }
+}
+
 .scroll-stack-card {
   width: 92%;
   max-width: 1200px;

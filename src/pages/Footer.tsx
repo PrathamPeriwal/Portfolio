@@ -97,7 +97,7 @@ const Footer = () => {
   return (
     <footer
       ref={footerRef}
-      className="relative bg-black text-white font-sans h-screen flex flex-col overflow-hidden max-lg:h-auto max-lg:min-h-[100dvh] max-lg:overflow-x-clip max-lg:overflow-y-visible"
+      className="relative bg-black text-white font-sans h-screen flex flex-col overflow-hidden max-lg:h-auto max-lg:overflow-x-clip max-lg:overflow-y-visible"
     >
       {/* Radial depth glow */}
       <div
@@ -130,7 +130,7 @@ const Footer = () => {
       {/* ── Main content ──────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex-1 flex flex-col px-6 md:px-16 pt-12 md:pt-16"
+        className="relative z-10 flex-1 flex flex-col px-6 md:px-16 pt-4 lg:pt-16"
       >
         {/* ── Impact CTA heading ── */}
         <motion.div
@@ -139,7 +139,7 @@ const Footer = () => {
           viewport={{ once: true }}
           custom={0}
           variants={stagger}
-          className="mb-10 md:mb-12"
+          className="mb-8 lg:mb-12"
         >
           <h2 className="font-sans font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter text-white leading-[1.05]">
             Ready to build something<br className="hidden md:block" /> remarkable?

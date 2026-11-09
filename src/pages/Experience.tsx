@@ -271,7 +271,7 @@ const ExperienceStackCard = ({
   return (
     <div
       ref={cardRef}
-      className="flex flex-col px-6 py-12 border-b border-black/10 last:border-b-0"
+      className="flex flex-col px-6 pt-7 pb-8 border-b border-black/10 last:border-b-0"
     >
       <div className="flex flex-col items-center justify-center">
         <span
@@ -441,10 +441,10 @@ const Experience = () => {
       {/* PART 1 — EDITORIAL INTRO */}
       <div
         ref={introRef}
-        className="relative z-20 bg-white w-full px-6 md:px-16 lg:px-24 pt-28 md:pt-36 pb-8 md:pb-10 overflow-hidden"
+        className="relative z-20 bg-white w-full px-6 md:px-16 lg:px-24 pt-4 pb-0 lg:pt-36 lg:pb-10 overflow-hidden"
       >
         <p
-          className="exp-intro-label font-sans font-medium tracking-[0.28em] uppercase mb-2 opacity-0"
+          className="exp-intro-label font-sans font-medium tracking-[0.28em] uppercase mb-0 lg:mb-2 opacity-0"
           style={{ fontSize: "10px", color: "#A0A0A0" }}
         />
 
@@ -473,7 +473,7 @@ const Experience = () => {
         {/* Horizontal divider */}
         <div
           ref={dividerRef}
-          className="mt-4 md:mt-10 w-full h-px bg-black/10 opacity-0"
+          className="mt-4 lg:mt-10 w-full h-px bg-black/10 opacity-0"
         />
       </div>
 

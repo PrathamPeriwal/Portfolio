@@ -325,6 +325,7 @@ const Education = () => {
 
   return (
     <section
+      className="edu-section"
       style={{
         background: "#000000",
         width: "100%",
@@ -344,7 +345,7 @@ const Education = () => {
         }}
       >
         {/* Header */}
-        <div ref={headingRef} style={{ marginBottom: "clamp(52px, 7vw, 88px)" }}>
+        <div ref={headingRef} className="edu-heading" style={{ marginBottom: "clamp(52px, 7vw, 88px)" }}>
           <p
             className="edu-anim"
             style={{
@@ -502,6 +503,11 @@ const Education = () => {
         .timeline-line-desktop { display: block; }
         .edu-desktop-row { display: grid !important; }
         .edu-mobile-row  { display: none  !important; }
+
+        @media (max-width: 1023.98px) {
+          .edu-section { padding-top: 64px !important; padding-bottom: 16px !important; }
+          .edu-heading { margin-bottom: 28px !important; }
+        }
 
         @media (max-width: 767px) {
           .timeline-line-mobile { display: block !important; }
