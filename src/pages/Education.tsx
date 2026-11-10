@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,6 +45,16 @@ const EDU_ITEMS = [
   },
 ];
 
+function liftCard(el: HTMLDivElement, on: boolean) {
+  el.style.transform = on ? "translateY(-6px)" : "translateY(0)";
+  el.style.borderColor = on ? "#3C3C3C" : "#262626";
+  el.style.boxShadow = on
+    ? "0 18px 56px rgba(0,0,0,0.75)"
+    : "0 4px 32px rgba(0,0,0,0.55)";
+  const pill = el.querySelector<HTMLElement>(".year-pill");
+  if (pill) pill.style.borderColor = on ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.10)";
+}
+
 const EduCard = ({
   item,
   index,
@@ -56,6 +67,7 @@ const EduCard = ({
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
+    if (prefersReducedMotion()) return;
     gsap.set(card, { opacity: 0, y: 28, scale: 0.98 });
     const ctx = gsap.context(() => {
       gsap.to(card, {
@@ -90,20 +102,15 @@ const EduCard = ({
           "transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94), border-color 0.32s ease, box-shadow 0.32s ease",
         cursor: "default",
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-6px)";
-        e.currentTarget.style.borderColor = "#3C3C3C";
-        e.currentTarget.style.boxShadow = "0 18px 56px rgba(0,0,0,0.75)";
-        const pill = e.currentTarget.querySelector<HTMLElement>(".year-pill");
-        if (pill) pill.style.borderColor = "rgba(255,255,255,0.22)";
+      onMouseEnter={(e) => liftCard(e.currentTarget, true)}
+      onMouseLeave={(e) => liftCard(e.currentTarget, false)}
+      onPointerDown={(e) => {
+        if (e.pointerType !== "mouse") liftCard(e.currentTarget, true);
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.borderColor = "#262626";
-        e.currentTarget.style.boxShadow = "0 4px 32px rgba(0,0,0,0.55)";
-        const pill = e.currentTarget.querySelector<HTMLElement>(".year-pill");
-        if (pill) pill.style.borderColor = "rgba(255,255,255,0.10)";
+      onPointerUp={(e) => {
+        if (e.pointerType !== "mouse") liftCard(e.currentTarget, false);
       }}
+      onPointerCancel={(e) => liftCard(e.currentTarget, false)}
     >
       {/* Degree */}
       <h3
@@ -224,6 +231,7 @@ const TimelineNode = () => {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) return;
     gsap.set(el, { scale: 0, opacity: 0 });
     const ctx = gsap.context(() => {
       gsap.to(el, {
@@ -279,6 +287,7 @@ const Education = () => {
   useEffect(() => {
     const el = headingRef.current;
     if (!el) return;
+    if (prefersReducedMotion()) return;
     const children = el.querySelectorAll(".edu-anim");
     gsap.set(children, { opacity: 0, y: 28 });
     const ctx = gsap.context(() => {
@@ -302,6 +311,10 @@ const Education = () => {
   useEffect(() => {
     const container = timelineRef.current;
     if (!container) return;
+    if (prefersReducedMotion()) {
+      gsap.set([desktopProgressRef.current, mobileProgressRef.current], { scaleY: 1 });
+      return;
+    }
     gsap.set([desktopProgressRef.current, mobileProgressRef.current], { scaleY: 0 });
     const ctx = gsap.context(() => {
       gsap.to([desktopProgressRef.current, mobileProgressRef.current], {
@@ -320,6 +333,7 @@ const Education = () => {
 
   return (
     <section
+      className="edu-section"
       style={{
         background: "#000000",
         width: "100%",
@@ -339,7 +353,7 @@ const Education = () => {
         }}
       >
         {/* Header */}
-        <div ref={headingRef} style={{ marginBottom: "clamp(52px, 7vw, 88px)" }}>
+        <div ref={headingRef} className="edu-heading" style={{ marginBottom: "clamp(52px, 7vw, 88px)" }}>
           <p
             className="edu-anim"
             style={{
@@ -497,6 +511,11 @@ const Education = () => {
         .timeline-line-desktop { display: block; }
         .edu-desktop-row { display: grid !important; }
         .edu-mobile-row  { display: none  !important; }
+
+        @media (max-width: 1023.98px) {
+          .edu-section { padding-top: 64px !important; padding-bottom: 16px !important; }
+          .edu-heading { margin-bottom: 28px !important; }
+        }
 
         @media (max-width: 767px) {
           .timeline-line-mobile { display: block !important; }

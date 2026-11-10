@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useSpring, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { Github, Linkedin, Instagram, Mail } from "lucide-react";
 import { useScramble } from "@/hooks/use-scramble";
+import { belowLgQuery, lgQuery } from "@/lib/breakpoints";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 import About from "./About";
 import Experience from "./Experience";
@@ -37,19 +39,52 @@ const CursorFollower = () => {
   );
 };
 
-const BrandLogo = () => (
-  <div className="fixed top-6 left-6 md:top-8 md:left-10 z-50 mix-blend-difference">
-    <button
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Back to top"
-      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+const BrandLogo = () => {
+  const [pastHero, setPastHero] = useState(false);
+
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+    const desktop = window.matchMedia(lgQuery);
+    if (!hero) return;
+
+    const sync = (heroVisible: boolean) => {
+      setPastHero(!desktop.matches && !heroVisible);
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      sync(entry.isIntersecting);
+    });
+    io.observe(hero);
+
+    const onDesktop = () => sync(hero.getBoundingClientRect().bottom > 0);
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      io.disconnect();
+      desktop.removeEventListener("change", onDesktop);
+    };
+  }, []);
+
+  return (
+    <div
+      className={`fixed top-6 left-6 md:top-8 md:left-10 z-50 mix-blend-difference max-lg:transition-opacity max-lg:duration-300 motion-reduce:transition-none ${
+        pastHero ? "max-lg:opacity-0 max-lg:pointer-events-none" : ""
+      }`}
     >
-      <h1 className="font-sans font-black text-2xl md:text-4xl tracking-tighter text-white flex items-start">
-        Pratham
-      </h1>
-    </button>
-  </div>
-);
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" })}
+        aria-label="Back to top"
+        aria-hidden={pastHero || undefined}
+        tabIndex={pastHero ? -1 : undefined}
+        className="max-lg:inline-flex max-lg:min-h-11 max-lg:min-w-11 max-lg:items-center"
+        style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+      >
+        <p className="font-sans font-black text-2xl md:text-4xl tracking-tighter text-white flex items-start">
+          Pratham
+        </p>
+      </button>
+    </div>
+  );
+};
 
 const AvailabilityBadge = () => (
   <motion.div
@@ -127,11 +162,17 @@ const MobileSocialStrip = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
-      className="flex flex-col items-center gap-6"
+      className="hero-socials flex w-full flex-row items-center justify-between md:hidden"
     >
       {socials.map(({ label, icon: Icon, href }) => (
-        <a key={label} href={href} target={href.startsWith("mailto") ? "_self" : "_blank"} rel="noopener noreferrer"
-          className="text-white hover:opacity-75 transition-opacity duration-300 block">
+        <a
+          key={label}
+          href={href}
+          target={href.startsWith("mailto") ? "_self" : "_blank"}
+          rel="noopener noreferrer"
+          aria-label={label}
+          className="text-white hover:opacity-75 active:opacity-75 transition-opacity duration-300 inline-flex h-11 w-11 items-center justify-center"
+        >
           <Icon size={18} strokeWidth={2.5} />
         </a>
       ))}
@@ -142,13 +183,36 @@ const MobileSocialStrip = () => {
 
 const FIRST_NAME = 'Pratham';
 const LAST_NAME  = 'Periwal';
-const TAGLINE    = 'Software Engineer designing intelligent products where scalable architecture, applied AI, and exceptional user experiences work as one.';
+const TAGLINE_PARTS: { text: string; em?: boolean }[] = [
+  { text: "Software Engineer designing " },
+  { text: "intelligent products", em: true },
+  { text: " where " },
+  { text: "scalable architecture", em: true },
+  { text: ", " },
+  { text: "applied AI", em: true },
+  { text: ", and " },
+  { text: "exceptional user experiences", em: true },
+  { text: " work as one." },
+];
+const TAGLINE = TAGLINE_PARTS.map((part) => part.text).join("");
 
 const HeroContent = () => {
   // Three independent scramble instances
   const { ref: firstRef } = useScramble(FIRST_NAME, { travelMs: 620, pool: 'dense', playOnMount: true, mountDelay: 300 });
   const { ref: lastRef } = useScramble(LAST_NAME, { travelMs: 580, pool: 'dense', playOnMount: true, mountDelay: 640 });
-  const { ref: taglineRef, trigger: triggerTagline } = useScramble(TAGLINE, { travelMs: 900, pool: 'tagline', playOnMount: false });
+  const { ref: taglineRef, trigger: triggerTagline } = useScramble(TAGLINE, {
+    travelMs: 900,
+    pool: 'tagline',
+    playOnMount: false,
+    onSettle: (el) => {
+      // Scramble finishes by flattening the paragraph. Put the emphasis
+      // spans back below lg; desktop stays the plain string.
+      if (!window.matchMedia(belowLgQuery).matches) return;
+      el.innerHTML = TAGLINE_PARTS.map((part) =>
+        part.em ? `<span class="hero-em">${part.text}</span>` : part.text
+      ).join("");
+    },
+  });
 
   useEffect(() => {
     if (window.matchMedia('(hover: none)').matches) return;
@@ -157,15 +221,16 @@ const HeroContent = () => {
   }, [triggerTagline]);
 
   return (
-    <div className="z-10 mt-auto flex flex-col relative">
+    <div className="hero-stack z-10 mt-auto flex flex-col relative">
       <SocialStrip />
-      {/* Heading block */}
+      {/* A. Name + underline. Underline stays off at lg+ */}
       <motion.div
+        className="hero-a"
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="font-sans font-bold text-7xl md:text-8xl lg:text-[9rem] xl:text-[11rem] leading-[0.85] tracking-tighter text-white text-left pt-4">
+        <h1 className="font-sans font-bold lg:text-[9rem] xl:text-[11rem] leading-[0.92] lg:leading-[0.85] tracking-tighter text-white text-left lg:pt-4">
           <span
             ref={firstRef as React.RefObject<HTMLSpanElement>}
             className="block cursor-default select-none"
@@ -179,82 +244,88 @@ const HeroContent = () => {
             {LAST_NAME}
           </span>
         </h1>
+        <div className="mt-4 h-[2px] w-12 bg-white lg:hidden" />
       </motion.div>
 
-      {/* Tagline Block */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-        className="w-full pr-[70px] md:pr-[120px] mt-2 md:mt-4"
-      >
-        <div className="w-12 h-[2px] bg-white mb-4 md:hidden" />
-        <p
-          ref={taglineRef as React.RefObject<HTMLParagraphElement>}
-          className="font-serif italic text-lg md:text-xl lg:text-2xl font-normal text-white/90 leading-relaxed tracking-wide text-left cursor-default select-none"
+      {/* B. Tagline. lg:contents so the desktop row can pair pills with CTAs */}
+      <div className="hero-b flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
+          className="hero-tagline w-full md:pr-[120px] lg:mt-4"
         >
-          {TAGLINE}
-        </p>
-      </motion.div>
+          <p
+            ref={taglineRef as React.RefObject<HTMLParagraphElement>}
+            className="font-serif italic text-[clamp(1.05rem,4.8vw,1.5rem)] lg:text-2xl font-normal text-white/90 leading-[1.45] tracking-wide text-left cursor-default select-none"
+          >
+            {TAGLINE_PARTS.map((part) =>
+              part.em ? (
+                <span key={part.text} className="hero-em">
+                  {part.text}
+                </span>
+              ) : (
+                part.text
+              )
+            )}
+          </p>
+        </motion.div>
+      </div>
 
-      {/* Pills and CTAs row */}
-      <div className="flex flex-col md:flex-row w-full justify-between items-start md:items-end gap-6 mt-6 md:mt-8 mb-2 pr-0">
-        {/* Expertise Tags */}
+      {/* C. Role pills, social icons (below md), CTAs */}
+      <div className="hero-c flex flex-col gap-4">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
-          className="flex flex-wrap gap-2 md:gap-3"
+          className="hero-pills flex flex-wrap gap-[10px] md:gap-3 lg:mt-8 lg:mb-2"
         >
           {['SOFTWARE DEVELOPER', 'SYSTEMS ENGINEER', 'AI/ML ENGINEER', 'CLOUD'].map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1.5 md:px-4 md:py-2 border border-white/20 rounded-full font-sans text-[9px] md:text-[10px] font-medium tracking-[0.2em] text-white/70 uppercase hover:bg-white hover:text-black transition-colors duration-300 cursor-default select-none whitespace-nowrap"
+              className="px-[14px] py-2 md:px-4 md:py-2 border border-white/20 rounded-full font-sans text-[11px] md:text-[10px] font-medium tracking-[0.2em] text-white/70 uppercase hover:bg-white hover:text-black transition-colors duration-300 cursor-default select-none whitespace-nowrap"
             >
               {tag}
             </span>
           ))}
         </motion.div>
-
-        {/* CTA Buttons */}
+        <MobileSocialStrip />
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-          className="flex flex-row flex-wrap items-center gap-3"
+          className="hero-ctas flex flex-row flex-wrap items-center gap-3 max-lg:w-full lg:mt-8 lg:mb-2"
         >
-          {/* Primary CTA */}
           <a
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative overflow-hidden border border-white px-5 py-3 md:px-6 md:py-3 flex items-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white px-3 py-3 md:px-6 md:py-3 max-lg:min-h-14 max-lg:flex-1 flex items-center justify-center gap-2 md:gap-3 transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="View Resume"
           >
-            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out" />
-            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black transition-colors duration-300 z-10 whitespace-nowrap">
+            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
+            <span className="relative font-sans font-black text-[12px] md:text-[10px] tracking-[0.12em] lg:tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
               View Resume
             </span>
             <svg
-              className="relative w-3 h-3 text-white group-hover:text-black transition-colors duration-300 z-10"
+              className="relative w-3 h-3 text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10"
               viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5"
             >
               <path d="M1 6h10M6 1l5 5-5 5" />
             </svg>
           </a>
 
-          {/* Secondary CTA */}
           <a
             href="#contact"
-            className="group relative overflow-hidden border border-white/30 px-5 py-3 md:px-6 md:py-3 flex items-center gap-2 md:gap-3 hover:border-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
+            className="group relative overflow-hidden border border-white/30 px-3 py-3 md:px-6 md:py-3 max-lg:min-h-14 max-lg:flex-1 flex items-center justify-center gap-2 md:gap-3 hover:border-white [@media(hover:none)]:!border-white [@media(hover:none)]:!bg-white transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shrink-0"
             aria-label="Contact Me"
           >
-            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out" />
-            <span className="relative font-sans font-black text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white group-hover:text-black transition-colors duration-300 z-10 whitespace-nowrap">
+            <span className="absolute inset-0 bg-white translate-x-[-101%] group-hover:translate-x-0 [@media(hover:none)]:!translate-x-0 transition-transform duration-500 ease-in-out" />
+            <span className="relative font-sans font-black text-[12px] md:text-[10px] tracking-[0.12em] lg:tracking-[0.25em] uppercase text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10 whitespace-nowrap">
               Contact Me
             </span>
             <svg
-              className="relative w-3 h-3 text-white group-hover:text-black transition-colors duration-300 z-10"
+              className="relative w-3 h-3 text-white group-hover:text-black [@media(hover:none)]:!text-black transition-colors duration-300 z-10"
               viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5"
             >
               <path d="M1 6h10M6 1l5 5-5 5" />
@@ -268,11 +339,26 @@ const HeroContent = () => {
 
 const Index = () => {
   const footerContainerRef = useRef<HTMLDivElement>(null);
+  const [footerReveal, setFooterReveal] = useState(
+    () => window.matchMedia(lgQuery).matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(lgQuery);
+    const sync = () => setFooterReveal(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: footerContainerRef,
     offset: ["start end", "end end"]
   });
 
+  // Shell is exactly one viewport tall and clips. y:-50%→0 slides the footer
+  // up inside that window. Below lg the shell is in-flow, so this shift would
+  // pull the footer over the contact section.
   const footerY = useTransform(scrollYProgress, [0, 1], ["-50%", "0%"]);
 
   return (
@@ -281,31 +367,27 @@ const Index = () => {
       <CursorFollower />
       <Navigation />
 
-      {/* Fixed background About section */}
-      <div className="fixed inset-0 z-0 bg-white text-black">
-        <About />
-      </div>
+      {/* lg+: fixed About sits under the hero and is revealed by the spacer.
+          Below lg it is not mounted, so it cannot show through under the footer. */}
+      {footerReveal && (
+        <div className="fixed inset-0 z-0 bg-white text-black">
+          <About />
+        </div>
+      )}
 
       {/* Hero */}
-      <section className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden">
+      <section id="hero" className="relative h-screen bg-black flex flex-col px-6 pt-14 pb-32 md:px-16 md:pt-20 md:pb-48 z-20 overflow-hidden">
         <AvailabilityBadge />
         <div className="hidden lg:block"><SplashCursor /></div>
-
-        {/* Mobile Midpoint Buffer*/}
-        <div className="h-[32px] w-full md:hidden" />
-
-        {/* Dynamic Centering Container for Mobile Socials */}
-        <div className="flex-1 flex flex-col items-end justify-center md:hidden pr-0 z-10 pointer-events-none">
-          <div className="pointer-events-auto">
-            <MobileSocialStrip />
-          </div>
-        </div>
-
         <HeroContent />
       </section>
 
       <div className="relative z-20 w-full bg-transparent">
-        <div id="about" className="h-screen w-full pointer-events-none" />
+        {footerReveal ? (
+          <div id="about" className="h-screen w-full pointer-events-none" />
+        ) : (
+          <About id="about" />
+        )}
 
         <div id="experience" className="relative z-20">
           <Experience />
@@ -329,8 +411,8 @@ const Index = () => {
       </div>
 
       {/* Parallax Footer Reveal Stack */}
-      <div ref={footerContainerRef} className="relative z-0 h-screen w-full overflow-hidden bg-black text-white">
-        <motion.div style={{ y: footerY }} className="h-full w-full">
+      <div ref={footerContainerRef} className="relative z-[1] h-screen w-full overflow-hidden bg-black text-white max-lg:h-auto max-lg:overflow-x-clip max-lg:overflow-y-visible">
+        <motion.div style={footerReveal ? { y: footerY } : undefined} className="h-full w-full max-lg:h-auto">
           <Footer />
         </motion.div>
       </div>

@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -79,7 +80,11 @@ const ExperienceCard = ({
     const footer = card.querySelector(".exp-footer");
 
     const mm = gsap.matchMedia();
-    mm.add("(min-width: 768px)", () => {
+    mm.add("(min-width: 1024px)", () => {
+      if (prefersReducedMotion()) {
+        gsap.set([year, right, tags, footer], { opacity: 1, y: 0 });
+        return;
+      }
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: card,
@@ -115,41 +120,6 @@ const ExperienceCard = ({
         .fromTo(footer, { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.2");
     });
 
-    mm.add("(max-width: 767px)", () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: card,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
-
-      tl.fromTo(
-        year,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-      )
-        .fromTo(
-          right,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.4",
-        )
-        .fromTo(
-          tags,
-          { opacity: 0, y: 14 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            stagger: 0.05,
-            ease: "power2.out",
-          },
-          "-=0.3",
-        )
-        .fromTo(footer, { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.2");
-    });
-
     return () => mm.revert();
   }, []);
 
@@ -165,12 +135,11 @@ const ExperienceCard = ({
         {/* LEFT: Year + Duration */}
         <div className="exp-year flex flex-col items-center justify-center gap-0 opacity-0 md:border-r border-black/10 md:pr-12 lg:pr-20">
           <span
-            className="leading-none tracking-tight select-none text-center"
+            className="leading-none tracking-tight select-none text-center text-[clamp(4.5rem,28vw,320px)] lg:text-[clamp(180px,24vw,320px)]"
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontStyle: "italic",
               fontWeight: 300,
-              fontSize: "clamp(180px, 24vw, 320px)",
               color: "#777777",
               lineHeight: 0.85,
               fontVariantNumeric: "lining-nums",
@@ -259,7 +228,146 @@ const ExperienceCard = ({
   );
 };
 
+function useMatches(query: string) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = () => setMatches(mq.matches);
+    mq.addEventListener("change", onChange);
+    onChange();
+    return () => mq.removeEventListener("change", onChange);
+  }, [query]);
+
+  return matches;
+}
+
+const ExperienceStackCard = ({
+  exp,
+  index,
+}: {
+  exp: ExperienceItem;
+  index: number;
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    if (prefersReducedMotion()) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(card, {
+        opacity: 0,
+        y: 16,
+        duration: 0.55,
+        ease: "power2.out",
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: card,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+      });
+    }, card);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      className="flex flex-col px-6 pt-7 pb-8 border-b border-black/10 last:border-b-0"
+    >
+      <div className="flex flex-col items-center justify-center">
+        <span
+          className="leading-none tracking-tight select-none text-center max-w-full text-[clamp(3.25rem,22vw,7.5rem)]"
+          style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontStyle: "italic",
+            fontWeight: 300,
+            color: "#777777",
+            lineHeight: 0.85,
+            fontVariantNumeric: "lining-nums",
+          }}
+        >
+          {exp.year}
+        </span>
+        <span
+          className="font-sans uppercase tracking-[0.25em] text-[11px] font-medium text-center mt-2"
+          style={{ color: "#666666" }}
+        >
+          {exp.duration}
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-5 mt-8">
+        <span
+          className="font-sans uppercase tracking-[0.22em] text-[10px] font-medium"
+          style={{ color: "#888888" }}
+        >
+          {exp.mode}
+        </span>
+
+        <div className="flex flex-col gap-1">
+          <p
+            className="font-sans font-medium text-black/40"
+            style={{ fontSize: "clamp(1rem, 1.5vw, 1.25rem)" }}
+          >
+            {exp.company}
+          </p>
+          <h3
+            className="font-sans leading-tight tracking-tight text-black font-black"
+            style={{ fontSize: "clamp(2.2rem, 3.8vw, 3.2rem)" }}
+          >
+            {exp.role}
+          </h3>
+        </div>
+
+        <ul className="flex flex-col gap-1">
+          {exp.bullets.map((b, i) => (
+            <li
+              key={i}
+              className="font-sans font-normal leading-normal text-black/60 flex gap-3"
+              style={{ fontSize: "clamp(0.8rem, 0.95vw, 0.9rem)" }}
+            >
+              <span className="mt-[6px] w-[5px] h-[5px] rounded-full bg-black/15 flex-shrink-0" />
+              {b}
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex flex-wrap gap-2 pt-2">
+          {exp.tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center px-3 py-1.5 border border-black/20 font-sans font-medium uppercase tracking-[0.15em] text-black/50"
+              style={{
+                fontSize: "9px",
+                borderRadius: "9999px",
+                background: "rgba(0,0,0,0.02)",
+              }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 pt-2.5 border-t border-black/10">
+        <p
+          className="font-sans font-medium tracking-[0.28em] uppercase text-[10px] leading-relaxed"
+          style={{ color: "#777777" }}
+        >
+          0{index + 1} &middot; {exp.role} &middot; {exp.company}
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const Experience = () => {
+  const pinned = useMatches("(min-width: 1024px)");
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
@@ -273,6 +381,11 @@ const Experience = () => {
     const sans = intro.querySelector(".exp-heading-sans");
     const serif = intro.querySelector(".exp-heading-serif");
     const divider = dividerRef.current;
+
+    if (prefersReducedMotion()) {
+      gsap.set([label, sans, serif, divider], { opacity: 1, y: 0 });
+      return;
+    }
 
     gsap.fromTo(
       [label, sans, serif, divider],
@@ -292,11 +405,13 @@ const Experience = () => {
     );
   }, []);
 
-  // Horizontal scroll pin
+  // Horizontal scroll pin — desktop only. The track is not mounted below lg.
   useEffect(() => {
+    if (!pinned) return;
+
     const mm = gsap.matchMedia();
 
-    mm.add("(min-width: 768px)", () => {
+    mm.add("(min-width: 1024px)", () => {
       const section = sectionRef.current;
       const track = trackRef.current;
       if (!section || !track) return;
@@ -312,7 +427,7 @@ const Experience = () => {
           end: `+=${scrollDistance}`,
           pin: true,
           anticipatePin: 1,
-          scrub: 1.2,
+          scrub: prefersReducedMotion() ? 0 : 1.2,
           invalidateOnRefresh: true,
         },
       });
@@ -330,17 +445,17 @@ const Experience = () => {
     });
 
     return () => mm.revert();
-  }, []);
+  }, [pinned]);
 
   return (
     <>
       {/* PART 1 — EDITORIAL INTRO */}
       <div
         ref={introRef}
-        className="relative z-20 bg-white w-full px-6 md:px-16 lg:px-24 pt-28 md:pt-36 pb-8 md:pb-10 overflow-hidden"
+        className="relative z-20 bg-white w-full px-6 md:px-16 lg:px-24 pt-4 pb-0 lg:pt-36 lg:pb-10 overflow-hidden"
       >
         <p
-          className="exp-intro-label font-sans font-medium tracking-[0.28em] uppercase mb-2 opacity-0"
+          className="exp-intro-label font-sans font-medium tracking-[0.28em] uppercase mb-0 lg:mb-2 opacity-0"
           style={{ fontSize: "10px", color: "#A0A0A0" }}
         />
 
@@ -369,47 +484,38 @@ const Experience = () => {
         {/* Horizontal divider */}
         <div
           ref={dividerRef}
-          className="mt-4 md:mt-10 w-full h-px bg-black/10 opacity-0"
+          className="mt-4 lg:mt-10 w-full h-px bg-black/10 opacity-0"
         />
       </div>
 
-      {/* PART 2 — HORIZONTAL TIMELINE (light grey bg)
-          Desktop: GSAP pinned horizontal scroll
-          Mobile: vertical cards */}
-
-      {/* DESKTOP */}
-      <section
-        ref={sectionRef}
-        className="relative z-20 hidden md:block overflow-hidden"
-        style={{ background: "#EAEAEA", height: "100vh" }}
-        aria-label="Experience timeline"
-      >
+      {pinned ? (
+        <section
+          ref={sectionRef}
+          className="relative z-20 overflow-hidden"
+          style={{ background: "#EAEAEA", height: "100vh" }}
+          aria-label="Experience timeline"
+        >
+          <div
+            ref={trackRef}
+            className="flex h-full"
+            style={{ width: `${EXPERIENCES.length * 100}vw` }}
+          >
+            {EXPERIENCES.map((exp, i) => (
+              <ExperienceCard key={exp.company} exp={exp} index={i} />
+            ))}
+          </div>
+        </section>
+      ) : (
         <div
-          ref={trackRef}
-          className="flex h-full"
-          style={{ width: `${EXPERIENCES.length * 100}vw` }}
+          className="relative z-20 flex flex-col"
+          style={{ background: "#EAEAEA" }}
+          aria-label="Experience timeline"
         >
           {EXPERIENCES.map((exp, i) => (
-            <ExperienceCard key={exp.company} exp={exp} index={i} />
+            <ExperienceStackCard key={exp.company} exp={exp} index={i} />
           ))}
         </div>
-      </section>
-
-      {/* MOBILE */}
-      <div
-        className="relative z-20 md:hidden flex flex-col"
-        style={{ background: "#EAEAEA" }}
-        aria-label="Experience timeline (mobile)"
-      >
-        {EXPERIENCES.map((exp, i) => (
-          <div
-            key={exp.company}
-            className="px-6 py-16 border-b border-black/10 last:border-b-0"
-          >
-            <ExperienceCard exp={exp} index={i} />
-          </div>
-        ))}
-      </div>
+      )}
     </>
   );
 };

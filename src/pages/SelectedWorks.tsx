@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useLenis } from "lenis/react";
 import StarBorder from "../components/StarBorder";
+import { LG, belowLgQuery } from "@/lib/breakpoints";
 import "./ScrollStack.css";
 
 const projects = [
@@ -11,7 +12,9 @@ const projects = [
     description:
       "An AI-powered personal finance platform that automates expense tracking, budgeting, and receipt scanning with real-time analytics, recurring transactions, and intelligent financial insights.",
     links: { live: "https://ledgerly-finance-one.vercel.app/", code: "https://github.com/PrathamPeriwal/Ledgerly" },
-    image: "/Ledgerly.png",
+    image: "/ledgerly.png",
+    width: 1914,
+    height: 946,
     cta: "Live Project",
   },
   {
@@ -24,7 +27,9 @@ const projects = [
       live: "https://linguae.onrender.com/",
       code: "https://github.com/PrathamPeriwal/Linguae",
     },
-    image: "/linguae.png",
+    image: "/linguae.webp",
+    width: 1200,
+    height: 600,
     cta: "Live Project",
   },
   {
@@ -35,9 +40,11 @@ const projects = [
       "Developed the official website with secure event registration, automated QR-based E-Pass generation and verification, interactive experiences and an alumni networking system.",
     links: {
       live: "https://ecesocbitm.in/",
-      code: "https://github.com/yourusername/ecesoc",
+      code: "https://github.com/ecesoc/website",
     },
-    image: "./ecesoc.png",
+    image: "/ecesoc.webp",
+    width: 1200,
+    height: 595,
     cta: "Live Project",
   },
   {
@@ -50,7 +57,9 @@ const projects = [
       live: "https://www.prathamperiwal.dev/",
       code: "https://github.com/PrathamPeriwal/Portfolio",
     },
-    image: "./portfolio.png",
+    image: "/portfolio.png",
+    width: 1870,
+    height: 862,
     cta: "Live Project",
   },
 ];
@@ -93,8 +102,11 @@ const ScrollStackCard = ({ project, index }: ScrollStackCardProps) => {
       <div className="content-grid">
         <img
           src={project.image}
-          className="main-image w-full h-auto object-contain"
-          alt={project.title}
+          width={project.width}
+          height={project.height}
+          loading="lazy"
+          className="main-image"
+          alt={`${project.title}. ${project.description}`}
           onLoad={() => window.dispatchEvent(new Event("resize"))}
         />
         <div className="project-description">
@@ -136,7 +148,7 @@ const SelectedWorks = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    const checkMobile = () => setIsMobile(window.innerWidth < LG);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -155,7 +167,11 @@ const SelectedWorks = () => {
     const containerHeight = window.innerHeight;
     const firstCardHeight = cards[0].offsetHeight;
 
-    const stackPositionPx = (containerHeight - firstCardHeight) / 2;
+    // Below lg the card pins 96px down, under the hamburger. Desktop stays centered.
+    const stackPositionPx =
+      window.innerWidth < LG
+        ? 96
+        : (containerHeight - firstCardHeight) / 2;
     const scaleEndPositionPx =
       stackPositionPx -
       (BASE_CONFIG.stackPosition - BASE_CONFIG.scaleEndPosition) *
@@ -261,46 +277,8 @@ const SelectedWorks = () => {
       }
     }
 
-    const thread = threadPathRef.current;
-    const threadLen = threadLenRef.current;
-
-    if (thread && threadLen > 0 && isMobile) {
-      let drawP = 0;
-      if (voidProgress > 0.2) {
-        drawP = (voidProgress - 0.2) / 0.8;
-      }
-      drawP = Math.min(Math.max(drawP, 0), 1);
-      thread.style.strokeDasharray = `${threadLen}`;
-      thread.style.strokeDashoffset = `${(threadLen * (1 - drawP)).toFixed(2)}`;
-
-      // Flashlight Typography Animation
-      const animateText = (
-        ref: React.RefObject<SVGTextElement>,
-        targetP: number,
-      ) => {
-        if (!ref.current) return;
-        const threshold = 0.15;
-        const dist = Math.abs(drawP - targetP);
-        let intensity = 0;
-
-        if (dist < threshold) {
-          intensity = 1 - dist / threshold;
-        }
-
-        const opacity = 0.3 + 0.7 * intensity;
-        const scale = 1 + 0.05 * intensity;
-
-        ref.current.style.opacity = opacity.toFixed(2);
-        ref.current.style.transform = `scale(${scale})`;
-        ref.current.style.transformOrigin = "center";
-        ref.current.style.transformBox = "fill-box";
-      };
-
-      animateText(textAnalyzeRef, 0.04);
-      animateText(textDesignRef, 0.2);
-      animateText(textBuildRef, 0.4);
-      animateText(textDeliverRef, 0.6);
-    }
+    // Mobile line/labels are driven by the native scroll effect below.
+    if (window.innerWidth < LG) return;
 
     const kineticWheel = kineticWheelRef.current;
     if (kineticWheel) {
@@ -313,48 +291,15 @@ const SelectedWorks = () => {
       } else if (voidProgress > 0) {
         kineticWheel.style.display = "block";
         kineticWheel.style.visibility = "visible";
-
-        if (isMobile) {
-          let figOpacity = 0;
-          if (voidProgress <= 0.25) {
-            figOpacity = 0.5 * (voidProgress / 0.25);
-          } else if (voidProgress <= 0.5) {
-            figOpacity = 0.5 + 0.5 * ((voidProgress - 0.25) / 0.25);
-          } else {
-            figOpacity = 1;
-          }
-
-          kineticWheel.style.opacity = figOpacity.toFixed(3);
-          kineticWheel.style.transform = `translate3d(0, 0, 0)`;
-
-          if (figureGroupRef.current) {
-            if (voidProgress >= 0.8) {
-              const textFade = 1 - (voidProgress - 0.8) / 0.2;
-              figureGroupRef.current.style.opacity = Math.max(
-                0,
-                textFade,
-              ).toFixed(3);
-            } else {
-              figureGroupRef.current.style.opacity = "1";
-            }
-          }
-        } else {
-          kineticWheel.style.opacity = Math.min(voidProgress * 4, 1).toFixed(3);
-          const targetRotation = 180 * (1 - voidProgress);
-          kineticWheel.style.transformOrigin = "50% 100%";
-          kineticWheel.style.transform = `rotate(${targetRotation}deg)`;
-        }
+        kineticWheel.style.opacity = Math.min(voidProgress * 4, 1).toFixed(3);
+        const targetRotation = 180 * (1 - voidProgress);
+        kineticWheel.style.transformOrigin = "50% 100%";
+        kineticWheel.style.transform = `rotate(${targetRotation}deg)`;
       } else {
         kineticWheel.style.display = "block";
         kineticWheel.style.opacity = "0";
         kineticWheel.style.visibility = "hidden";
-        if (isMobile) {
-          kineticWheel.style.transform = `translate3d(0, 0, 0)`;
-          if (figureGroupRef.current)
-            figureGroupRef.current.style.opacity = "1";
-        } else {
-          kineticWheel.style.transform = `rotate(180deg)`;
-        }
+        kineticWheel.style.transform = `rotate(180deg)`;
       }
     }
   });
@@ -370,17 +315,16 @@ const SelectedWorks = () => {
       voidContainerRef.current.style.transform = "";
       voidContainerRef.current.style.transformOrigin = "";
     }
-    if (kineticWheelRef.current) kineticWheelRef.current.style.transform = "";
+    if (kineticWheelRef.current && window.innerWidth >= LG)
+      kineticWheelRef.current.style.transform = "";
 
     if (threadPathRef.current && isMobile) {
       try {
         const len = threadPathRef.current.getTotalLength();
-        if (len > 0) {
-          threadLenRef.current = len;
-          threadPathRef.current.style.strokeDasharray = `${len}`;
-          threadPathRef.current.style.strokeDashoffset = `${len}`;
-        }
-      } catch (e) {}
+        if (len > 0) threadLenRef.current = len;
+      } catch {
+        // Path length is unavailable until the SVG has layout.
+      }
     }
 
     const scrollY = window.scrollY;
@@ -417,16 +361,161 @@ const SelectedWorks = () => {
     calculateAndRender();
     const initTimer = setTimeout(calculateAndRender, 100);
     window.addEventListener("resize", calculateAndRender, { passive: true });
+    window.addEventListener("orientationchange", calculateAndRender);
     return () => {
       clearTimeout(initTimer);
       resizeObserver.disconnect();
       window.removeEventListener("resize", calculateAndRender);
+      window.removeEventListener("orientationchange", calculateAndRender);
     };
   }, [calculateAndRender]);
 
+  // Mobile-only. The black spacer (.scroll-stack-end plus the stack's bottom
+  // padding) is the scrub range. window scroll, not Lenis — syncTouch: false
+  // still emits, but this does not depend on that.
+  useEffect(() => {
+    const mq = window.matchMedia(belowLgQuery);
+    const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let raf = 0;
+
+    const apply = (remeasure: boolean) => {
+      raf = 0;
+      if (!mq.matches) return;
+      const wheel = kineticWheelRef.current;
+      const path = threadPathRef.current;
+      if (!wheel || !path) return;
+
+      if (remeasure || threadLenRef.current <= 0) {
+        try {
+          const len = path.getTotalLength();
+          if (len > 0) threadLenRef.current = len;
+        } catch {
+          /* path not laid out yet */
+        }
+      }
+
+      const end = document.querySelector(".scroll-stack-end") as HTMLElement | null;
+      const vh = window.innerHeight || 1;
+      const reduced = reduceMq.matches;
+      let progress = 1;
+      let show = false;
+      if (end) {
+        const rect = end.getBoundingClientRect();
+        const bottom = end.parentElement?.getBoundingClientRect().bottom ?? rect.bottom;
+        const span = Math.max(bottom - rect.top, 1);
+        show = bottom > 0 && rect.top < vh;
+        if (!reduced) progress = Math.min(Math.max((vh - rect.top) / span, 0), 1);
+        if (!show) {
+          wheel.style.opacity = "0";
+          wheel.style.visibility = "hidden";
+          wheel.style.display = bottom <= 0 ? "none" : "block";
+          return;
+        }
+      }
+
+      const len = threadLenRef.current;
+      const drawP = reduced ? 1 : progress > 0.2 ? Math.min((progress - 0.2) / 0.8, 1) : 0;
+      if (len > 0) {
+        path.style.strokeDasharray = `${len}`;
+        path.style.strokeDashoffset = `${(len * (1 - drawP)).toFixed(2)}`;
+      }
+
+      const pulse = (node: SVGTextElement | null, targetP: number) => {
+        if (!node) return;
+        if (reduced) {
+          node.style.opacity = "1";
+          node.style.transform = "none";
+          return;
+        }
+        const dist = Math.abs(drawP - targetP);
+        const intensity = dist < 0.15 ? 1 - dist / 0.15 : 0;
+        node.style.opacity = (0.3 + 0.7 * intensity).toFixed(2);
+        node.style.transform = `scale(${(1 + 0.05 * intensity).toFixed(3)})`;
+        node.style.transformOrigin = "center";
+        node.style.transformBox = "fill-box";
+      };
+      pulse(textAnalyzeRef.current, 0.04);
+      pulse(textDesignRef.current, 0.2);
+      pulse(textBuildRef.current, 0.4);
+      pulse(textDeliverRef.current, 0.6);
+
+      wheel.style.display = "block";
+      wheel.style.visibility = "visible";
+      wheel.style.transform = "translate3d(0, 0, 0)";
+
+      if (reduced) {
+        wheel.style.opacity = "1";
+        if (figureGroupRef.current) figureGroupRef.current.style.opacity = "1";
+        return;
+      }
+
+      const figOpacity =
+        progress <= 0.25
+          ? 0.5 * (progress / 0.25)
+          : progress <= 0.5
+            ? 0.5 + 0.5 * ((progress - 0.25) / 0.25)
+            : 1;
+      wheel.style.opacity = figOpacity.toFixed(3);
+      if (figureGroupRef.current) {
+        figureGroupRef.current.style.opacity =
+          progress >= 0.8
+            ? Math.max(0, 1 - (progress - 0.8) / 0.2).toFixed(3)
+            : "1";
+      }
+    };
+
+    const onScroll = () => {
+      if (!mq.matches || raf) return;
+      raf = requestAnimationFrame(() => apply(false));
+    };
+    const onResize = () => {
+      if (mq.matches) apply(true);
+    };
+    const onMq = () => {
+      if (mq.matches) {
+        apply(true);
+        return;
+      }
+      cancelAnimationFrame(raf);
+      raf = 0;
+      const wheel = kineticWheelRef.current;
+      if (!wheel) return;
+      wheel.style.opacity = "0";
+      wheel.style.visibility = "hidden";
+      wheel.style.display = "block";
+      wheel.style.transform = "rotate(180deg)";
+      wheel.style.transformOrigin = "50% 100%";
+    };
+
+    mq.addEventListener("change", onMq);
+    reduceMq.addEventListener("change", onResize);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("orientationchange", onResize);
+    if (mq.matches) apply(true);
+
+    return () => {
+      mq.removeEventListener("change", onMq);
+      reduceMq.removeEventListener("change", onResize);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+      cancelAnimationFrame(raf);
+      if (window.innerWidth >= LG) {
+        const wheel = kineticWheelRef.current;
+        if (!wheel) return;
+        wheel.style.opacity = "0";
+        wheel.style.visibility = "hidden";
+        wheel.style.display = "block";
+        wheel.style.transform = "rotate(180deg)";
+        wheel.style.transformOrigin = "50% 100%";
+      }
+    };
+  }, [isMobile]);
+
   return (
     <section className="min-h-screen bg-black text-white font-sans relative">
-      <div className="w-full h-[25vh] md:h-[25vh] lg:h-[70vh] border-b border-white/20 overflow-hidden flex items-center relative z-10 bg-black">
+      <div className="w-full h-auto py-8 lg:h-[70vh] lg:py-0 border-b border-white/20 overflow-hidden flex items-start lg:items-center relative z-10 bg-black">
         <div className="marquee-selected-works">
           <div className="marquee-selected-works__track">
             {[0, 1, 2, 3].map((blockIndex) => (

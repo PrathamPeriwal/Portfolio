@@ -1,11 +1,18 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { LG } from "@/lib/breakpoints";
 
 // ─── Keyframe injected once into <head> ────────────────────────────────────────
 const marqueeKeyframe = `
   @keyframes skillsScroll {
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
+  }
+  .skill-row-static { display: flex; }
+  .skill-row-marquee { display: none; }
+  @media (hover: hover) and (min-width: ${LG}px) {
+    .skill-row-static { display: none; }
+    .skill-row-marquee { display: flex; }
   }
 `;
 
@@ -76,6 +83,11 @@ const Pill = ({ label }: { label: string }) => {
     <span
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
+      onPointerDown={(e) => {
+        if (e.pointerType !== "mouse") setHov(true);
+      }}
+      onPointerUp={() => setHov(false)}
+      onPointerCancel={() => setHov(false)}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -109,13 +121,58 @@ const SkillRow = ({
   const duration = category.skills.length * 2.2;
 
   return (
+    <>
     <div
+      className="skill-row-static px-6 md:px-12 lg:px-16"
+      style={{
+        borderBottom: "1px solid black",
+        flexDirection: "column",
+        gap: "14px",
+        paddingTop: "18px",
+        paddingBottom: "18px",
+        background: "white",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "16px" }}>
+        <span
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "clamp(0.82rem, 1.25vw, 1rem)",
+            fontWeight: 500,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            color: "#0a0a0a",
+            userSelect: "none",
+          }}
+        >
+          {category.title}
+        </span>
+        <span
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "0.65rem",
+            letterSpacing: "0.08em",
+            color: "#bbb",
+            textTransform: "uppercase",
+            flexShrink: 0,
+          }}
+        >
+          {category.skills.length}
+        </span>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+        {category.skills.map((skill) => (
+          <Pill key={skill} label={skill} />
+        ))}
+      </div>
+    </div>
+    <div
+      className="skill-row-marquee"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         borderBottom: "1px solid black",
         height: "68px",
-        display: "flex",
         alignItems: "center",
         background: hovered ? "#F8F8F8" : "white",
         transition: "background 0.25s ease",
@@ -257,6 +314,7 @@ const SkillRow = ({
         </span>
       </div>
     </div>
+    </>
   );
 };
 
@@ -264,8 +322,8 @@ const SkillsPhilosophy = () => {
   return (
     <>
       <style>{marqueeKeyframe}</style>
-      <section className="min-h-screen bg-white text-black font-sans flex flex-col justify-center">
-        <div className="w-full px-6 md:px-12 lg:px-16 pt-24 pb-6 md:pt-12 md:pb-6 bg-white z-10 md:flex-shrink-0">
+      <section className="min-h-screen max-lg:min-h-0 bg-white text-black font-sans flex flex-col justify-center max-lg:justify-start">
+        <div className="w-full px-6 md:px-12 lg:px-16 pt-16 pb-6 md:pt-12 md:pb-6 bg-white z-10 md:flex-shrink-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -288,7 +346,7 @@ const SkillsPhilosophy = () => {
         </div>
 
         {/* Skills Rows */}
-        <div className="w-full border-t border-black mt-16">
+        <div className="w-full border-t border-black mt-7 lg:mt-16">
           {skillCategories.map((category) => (
             <SkillRow key={category.title} category={category} />
           ))}

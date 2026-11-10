@@ -75,7 +75,7 @@ const Contact = () => {
   };
 
   return (
-    <section className="h-screen w-full bg-white text-black font-sans px-4 md:px-8 lg:px-12 overflow-hidden flex items-center justify-center relative">
+    <section className="h-screen w-full bg-white text-black font-sans px-4 md:px-8 lg:px-12 overflow-hidden flex items-center justify-center relative max-lg:h-auto max-lg:min-h-0 max-lg:items-start max-lg:overflow-visible max-lg:py-16">
       <motion.div
         className="grid grid-cols-1 lg:grid-cols-12 gap-y-8 lg:gap-x-16 max-w-[1400px] w-full mx-auto"
         variants={containerVariants}
@@ -84,12 +84,12 @@ const Contact = () => {
         viewport={{ once: true }}
       >
         {/* Left Column */}
-        <div className="lg:col-span-7 flex flex-col justify-between h-full py-2">
+        <div className="lg:col-span-7 flex flex-col justify-between h-full py-2 max-lg:py-0">
           <motion.div variants={itemVariants} className="mb-8 lg:mb-0">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-left">
+            <h2 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-left">
               Contact <br />
               Me <span className="inline-block ml-2">→</span>
-            </h1>
+            </h2>
           </motion.div>
 
           <motion.div variants={itemVariants} className="mt-8 lg:mt-0 hidden lg:block">
@@ -111,18 +111,18 @@ const Contact = () => {
               <div className="flex flex-col gap-1">
                 <label htmlFor="firstName" className="text-xs font-bold uppercase tracking-wider">First Name*</label>
                 <input
-                  type="text" id="firstName" name="firstName"
+                  type="text" id="firstName" name="firstName" autoComplete="given-name"
                   value={formData.firstName} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
               <div className="flex flex-col gap-1">
                 <label htmlFor="lastName" className="text-xs font-bold uppercase tracking-wider">Last Name*</label>
                 <input
-                  type="text" id="lastName" name="lastName"
+                  type="text" id="lastName" name="lastName" autoComplete="family-name"
                   value={formData.lastName} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
@@ -133,9 +133,9 @@ const Contact = () => {
               <div className="flex flex-col gap-1">
                 <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider">Email*</label>
                 <input
-                  type="email" id="email" name="email"
+                  type="email" id="email" name="email" autoComplete="email"
                   value={formData.email} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
@@ -144,7 +144,7 @@ const Contact = () => {
                 <input
                   type="text" id="subject" name="subject"
                   value={formData.subject} onChange={handleChange}
-                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors"
+                  className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
                   required
                 />
               </div>
@@ -156,7 +156,7 @@ const Contact = () => {
               <textarea
                 id="message" name="message" rows={3}
                 value={formData.message} onChange={handleChange}
-                className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus:outline-none transition-colors resize-none"
+                className="w-full bg-transparent border-b border-black/30 py-1 text-lg font-medium focus:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors resize-none"
                 required
               />
             </div>
@@ -166,10 +166,10 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="group flex items-center gap-3 text-lg font-bold uppercase tracking-wider hover:text-black/70 transition-colors disabled:opacity-50"
+                className="group flex items-center gap-3 text-lg font-bold uppercase tracking-wider hover:text-black/70 max-lg:active:text-black/70 max-lg:min-h-11 transition-colors disabled:opacity-50"
               >
                 {status === "sending" ? "Sending…" : "Send Message"}
-                <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
+                <span className="group-hover:translate-x-2 max-lg:group-active:translate-x-2 transition-transform duration-300">→</span>
               </button>
 
               {status === "success" && (

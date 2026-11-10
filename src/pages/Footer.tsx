@@ -1,40 +1,44 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { belowLgQuery } from "@/lib/breakpoints";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 // ─── Animated link ─────────────────────────────────────────────────────────────
 const FooterLink = ({
   href,
   label,
   external = true,
+  tap = false,
 }: {
   href: string;
   label: string;
   external?: boolean;
+  tap?: boolean;
 }) => (
   <motion.a
     href={href}
     target={external ? "_blank" : "_self"}
     rel={external ? "noopener noreferrer" : undefined}
-    className="group relative flex items-center gap-2 w-fit"
+    className="group relative flex items-center gap-2 w-fit max-lg:min-h-11"
     whileHover={{ y: -2 }}
+    whileTap={tap ? { y: -2 } : undefined}
     transition={{ duration: 0.25, ease: "easeOut" }}
   >
-    <span className="font-sans text-sm font-medium tracking-wide text-white/55 group-hover:text-white transition-colors duration-300">
+    <span className="font-sans text-sm font-medium tracking-wide text-white/55 group-hover:text-white max-lg:group-active:text-white transition-colors duration-300">
       {label}
     </span>
-    <span className="text-white/35 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 ease-out text-sm">
+    <span className="text-white/35 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 max-lg:group-active:text-white max-lg:group-active:translate-x-0.5 max-lg:group-active:-translate-y-0.5 transition-all duration-300 ease-out text-sm">
       ↗
     </span>
-    {/* Sliding underline */}
-    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-white/50 transition-all duration-300 ease-out group-hover:w-[calc(100%-1.2rem)]" />
+    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-white/50 transition-all duration-300 ease-out group-hover:w-[calc(100%-1.2rem)] max-lg:group-active:w-[calc(100%-1.2rem)]" />
   </motion.a>
 );
 
 // ─── Back to top ───────────────────────────────────────────────────────────────
 const BackToTop = () => (
   <motion.button
-    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-    className="group flex items-center gap-2.5 text-white/35 hover:text-white transition-colors duration-400"
+    onClick={() => window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" })}
+    className="group flex items-center gap-2.5 text-white/35 hover:text-white max-lg:active:text-white max-lg:min-h-11 transition-colors duration-400"
     aria-label="Back to top"
     initial={{ opacity: 0 }}
     whileInView={{ opacity: 1 }}
@@ -44,7 +48,7 @@ const BackToTop = () => (
     <span className="font-sans text-[10px] tracking-[0.26em] uppercase font-medium">
       Back to top
     </span>
-    <span className="inline-block transition-transform duration-300 ease-out group-hover:-translate-y-1.5 text-base">
+    <span className="inline-block transition-transform duration-300 ease-out group-hover:-translate-y-1.5 max-lg:group-active:-translate-y-1.5 text-base">
       ↑
     </span>
   </motion.button>
@@ -53,6 +57,17 @@ const BackToTop = () => (
 // ─── Footer ────────────────────────────────────────────────────────────────────
 const Footer = () => {
   const footerRef = useRef<HTMLElement>(null);
+  const [belowLg, setBelowLg] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(belowLgQuery).matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(belowLgQuery);
+    const sync = () => setBelowLg(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: footerRef,
@@ -83,7 +98,7 @@ const Footer = () => {
   return (
     <footer
       ref={footerRef}
-      className="relative bg-black text-white font-sans h-screen flex flex-col overflow-hidden"
+      className="relative bg-black text-white font-sans h-screen flex flex-col overflow-hidden max-lg:h-auto max-lg:overflow-x-clip max-lg:overflow-y-visible"
     >
       {/* Radial depth glow */}
       <div
@@ -116,7 +131,7 @@ const Footer = () => {
       {/* ── Main content ──────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex-1 flex flex-col px-6 md:px-16 pt-12 md:pt-16"
+        className="relative z-10 flex-1 flex flex-col px-6 md:px-16 pt-4 lg:pt-16"
       >
         {/* ── Impact CTA heading ── */}
         <motion.div
@@ -125,7 +140,7 @@ const Footer = () => {
           viewport={{ once: true }}
           custom={0}
           variants={stagger}
-          className="mb-10 md:mb-12"
+          className="mb-8 lg:mb-12"
         >
           <h2 className="font-sans font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter text-white leading-[1.05]">
             Ready to build something<br className="hidden md:block" /> remarkable?
@@ -161,10 +176,10 @@ const Footer = () => {
             </p>
 
             <div className="flex flex-col gap-0.5 mt-1">
-              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/25">
+              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/70 lg:text-white/25">
                 Visakhapatnam, India
               </p>
-              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/25">
+              <p className="font-sans text-[10px] tracking-[0.18em] uppercase text-white/70 lg:text-white/25">
                 Remote&nbsp;·&nbsp;Worldwide
               </p>
             </div>
@@ -179,7 +194,7 @@ const Footer = () => {
             variants={stagger}
             className="flex flex-col gap-4"
           >
-            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/30 font-medium">
+            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/75 lg:text-white/30 font-medium">
               Connect
             </p>
             <div className="flex flex-col gap-4">
@@ -189,6 +204,7 @@ const Footer = () => {
                   href={link.href}
                   label={link.label}
                   external={link.external !== false}
+                  tap={belowLg}
                 />
               ))}
             </div>
@@ -203,7 +219,7 @@ const Footer = () => {
             variants={stagger}
             className="flex flex-col gap-4"
           >
-            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/30 font-medium">
+            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/75 lg:text-white/30 font-medium">
               Built with
             </p>
 
@@ -213,7 +229,7 @@ const Footer = () => {
               Lenis&nbsp;•&nbsp;Tailwind CSS
             </p>
 
-            <p className="font-serif italic text-xs text-white/30 leading-relaxed max-w-[28ch]">
+            <p className="font-serif italic text-xs text-white/75 lg:text-white/30 leading-relaxed max-w-[28ch]">
               Crafted with attention to performance, motion, accessibility, and
               developer experience.
             </p>

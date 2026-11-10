@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useLenis } from "lenis/react";
+import { LG } from "@/lib/breakpoints";
 import SkillsPhilosophy from "./SkillsPhilosophy";
 
 function ease(t: number): number {
@@ -33,7 +34,7 @@ const VectorBridge = () => {
     const RECT_H = 220;
 
     const measure = useCallback(() => {
-        const mobile = window.innerWidth < 1024;
+        const mobile = window.innerWidth < LG;
         setIsMobile(mobile);
 
         if (sectionRef.current) {
@@ -65,7 +66,9 @@ const VectorBridge = () => {
             try {
                 const len = bridgeLineRef.current.getTotalLength();
                 if (len > 0) totalLineLenRef.current = len;
-            } catch (_) { }
+            } catch {
+                // Path length is unavailable until the SVG has layout.
+            }
         }
 
         if (portalInnerRef.current && sectionRef.current) {
@@ -150,8 +153,10 @@ const VectorBridge = () => {
                 }
 
                 const e = ease(expansionProgress);
-                const scaleX = 1 + e * (vw / RECT_W - 1);
-                const scaleY = 1 + e * (vh / RECT_H - 1);
+                const boxW = box.offsetWidth || RECT_W;
+                const boxH = box.offsetHeight || RECT_H;
+                const scaleX = 1 + e * (vw / boxW - 1);
+                const scaleY = 1 + e * (vh / boxH - 1);
 
                 box.style.transform = `translate3d(0, 0, 0) scale(${scaleX.toFixed(4)}, ${scaleY.toFixed(4)})`;
                 inner.style.transform = `scale(${(1 / scaleX).toFixed(4)}, ${(1 / scaleY).toFixed(4)})`;
@@ -198,9 +203,9 @@ const VectorBridge = () => {
                 position: 'absolute',
                 top: '50vh',
                 left: '50%',
-                width: `${RECT_W}px`,
+                width: `min(${RECT_W}px, 100%)`,
                 height: `${RECT_H}px`,
-                marginLeft: `-${RECT_W / 2}px`,
+                marginLeft: `max(-${RECT_W / 2}px, -50%)`,
                 marginTop: `-${RECT_H / 2}px`,
                 background: 'white',
                 border: '2px solid black',
