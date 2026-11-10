@@ -27,9 +27,9 @@ const projects = [
       live: "https://linguae.onrender.com/",
       code: "https://github.com/PrathamPeriwal/Linguae",
     },
-    image: "/linguae.png",
-    width: 1879,
-    height: 940,
+    image: "/linguae.webp",
+    width: 1200,
+    height: 600,
     cta: "Live Project",
   },
   {
@@ -42,9 +42,9 @@ const projects = [
       live: "https://ecesocbitm.in/",
       code: "https://github.com/ecesoc/website",
     },
-    image: "/ecesoc.png",
-    width: 1903,
-    height: 943,
+    image: "/ecesoc.webp",
+    width: 1200,
+    height: 595,
     cta: "Live Project",
   },
   {
@@ -106,7 +106,7 @@ const ScrollStackCard = ({ project, index }: ScrollStackCardProps) => {
           height={project.height}
           loading="lazy"
           className="main-image"
-          alt={project.title}
+          alt={`${project.title}. ${project.description}`}
           onLoad={() => window.dispatchEvent(new Event("resize"))}
         />
         <div className="project-description">
@@ -322,7 +322,9 @@ const SelectedWorks = () => {
       try {
         const len = threadPathRef.current.getTotalLength();
         if (len > 0) threadLenRef.current = len;
-      } catch (e) {}
+      } catch {
+        // Path length is unavailable until the SVG has layout.
+      }
     }
 
     const scrollY = window.scrollY;

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useLenis } from 'lenis/react';
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 interface NavItem {
   label: string;
@@ -79,6 +80,8 @@ const socialVariants: Variants = {
 const Navigation = () => {
   const [open, setOpen] = useState(false);
   const lenis = useLenis();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open) {
@@ -97,6 +100,40 @@ const Navigation = () => {
     };
   }, [open, lenis]);
 
+  useEffect(() => {
+    if (!open) return;
+    const menu = menuRef.current;
+    const button = buttonRef.current;
+    const focusable = () =>
+      Array.from(menu?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])") ?? []);
+    const timer = window.setTimeout(() => focusable()[0]?.focus(), 0);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("keydown", onKey);
+      button?.focus();
+    };
+  }, [open]);
+
   const handleNavClick = (href: string) => {
     setOpen(false);
     
@@ -104,7 +141,7 @@ const Navigation = () => {
       const id = href.replace("#", "");
       const el = document.getElementById(id);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+        el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
       }
     }, 600);
   };
@@ -117,6 +154,7 @@ const Navigation = () => {
         style={{ transform: "translateZ(0)", willChange: "transform" }}
       >
         <button
+          ref={buttonRef}
           onClick={() => setOpen((v) => !v)}
           className="flex flex-col items-center justify-center gap-[5px] w-14 h-14 md:w-16 md:h-16 rounded-full bg-black transition-colors duration-300 relative"
           style={{
@@ -124,6 +162,8 @@ const Navigation = () => {
             WebkitFontSmoothing: "antialiased",
           }}
           aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="site-menu"
         >
           {/* Top Line */}
           <motion.span
@@ -152,6 +192,11 @@ const Navigation = () => {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={menuRef}
+            id="site-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
             key="menu"
             variants={overlayVariants}
             initial="closed"

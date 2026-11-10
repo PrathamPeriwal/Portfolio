@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { belowLgQuery } from "@/lib/breakpoints";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 // ─── Animated link ─────────────────────────────────────────────────────────────
 const FooterLink = ({
@@ -36,7 +37,7 @@ const FooterLink = ({
 // ─── Back to top ───────────────────────────────────────────────────────────────
 const BackToTop = () => (
   <motion.button
-    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+    onClick={() => window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" })}
     className="group flex items-center gap-2.5 text-white/35 hover:text-white max-lg:active:text-white max-lg:min-h-11 transition-colors duration-400"
     aria-label="Back to top"
     initial={{ opacity: 0 }}

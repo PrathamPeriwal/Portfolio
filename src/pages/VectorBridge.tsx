@@ -66,7 +66,9 @@ const VectorBridge = () => {
             try {
                 const len = bridgeLineRef.current.getTotalLength();
                 if (len > 0) totalLineLenRef.current = len;
-            } catch (_) { }
+            } catch {
+                // Path length is unavailable until the SVG has layout.
+            }
         }
 
         if (portalInnerRef.current && sectionRef.current) {

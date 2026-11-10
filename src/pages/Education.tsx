@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -66,6 +67,7 @@ const EduCard = ({
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
+    if (prefersReducedMotion()) return;
     gsap.set(card, { opacity: 0, y: 28, scale: 0.98 });
     const ctx = gsap.context(() => {
       gsap.to(card, {
@@ -229,6 +231,7 @@ const TimelineNode = () => {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) return;
     gsap.set(el, { scale: 0, opacity: 0 });
     const ctx = gsap.context(() => {
       gsap.to(el, {
@@ -284,6 +287,7 @@ const Education = () => {
   useEffect(() => {
     const el = headingRef.current;
     if (!el) return;
+    if (prefersReducedMotion()) return;
     const children = el.querySelectorAll(".edu-anim");
     gsap.set(children, { opacity: 0, y: 28 });
     const ctx = gsap.context(() => {
@@ -307,6 +311,10 @@ const Education = () => {
   useEffect(() => {
     const container = timelineRef.current;
     if (!container) return;
+    if (prefersReducedMotion()) {
+      gsap.set([desktopProgressRef.current, mobileProgressRef.current], { scaleY: 1 });
+      return;
+    }
     gsap.set([desktopProgressRef.current, mobileProgressRef.current], { scaleY: 0 });
     const ctx = gsap.context(() => {
       gsap.to([desktopProgressRef.current, mobileProgressRef.current], {

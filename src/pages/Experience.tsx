@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -80,6 +81,10 @@ const ExperienceCard = ({
 
     const mm = gsap.matchMedia();
     mm.add("(min-width: 1024px)", () => {
+      if (prefersReducedMotion()) {
+        gsap.set([year, right, tags, footer], { opacity: 1, y: 0 });
+        return;
+      }
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: card,
@@ -249,6 +254,7 @@ const ExperienceStackCard = ({
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
+    if (prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       gsap.from(card, {
@@ -376,6 +382,11 @@ const Experience = () => {
     const serif = intro.querySelector(".exp-heading-serif");
     const divider = dividerRef.current;
 
+    if (prefersReducedMotion()) {
+      gsap.set([label, sans, serif, divider], { opacity: 1, y: 0 });
+      return;
+    }
+
     gsap.fromTo(
       [label, sans, serif, divider],
       { opacity: 0, y: 40 },
@@ -416,7 +427,7 @@ const Experience = () => {
           end: `+=${scrollDistance}`,
           pin: true,
           anticipatePin: 1,
-          scrub: 1.2,
+          scrub: prefersReducedMotion() ? 0 : 1.2,
           invalidateOnRefresh: true,
         },
       });

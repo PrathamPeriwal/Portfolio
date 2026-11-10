@@ -3,6 +3,7 @@ import { motion, useSpring, useMotionValue, useScroll, useTransform } from "fram
 import { Github, Linkedin, Instagram, Mail } from "lucide-react";
 import { useScramble } from "@/hooks/use-scramble";
 import { belowLgQuery, lgQuery } from "@/lib/breakpoints";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 
 import About from "./About";
 import Experience from "./Experience";
@@ -70,16 +71,16 @@ const BrandLogo = () => {
       }`}
     >
       <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onClick={() => window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" })}
         aria-label="Back to top"
         aria-hidden={pastHero || undefined}
         tabIndex={pastHero ? -1 : undefined}
         className="max-lg:inline-flex max-lg:min-h-11 max-lg:min-w-11 max-lg:items-center"
         style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
       >
-        <h1 className="font-sans font-black text-2xl md:text-4xl tracking-tighter text-white flex items-start">
+        <p className="font-sans font-black text-2xl md:text-4xl tracking-tighter text-white flex items-start">
           Pratham
-        </h1>
+        </p>
       </button>
     </div>
   );

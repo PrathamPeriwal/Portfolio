@@ -47,6 +47,7 @@ const About = ({ id }: { id?: string }) => {
       id={id}
       className="relative z-10 w-full bg-white text-black font-sans px-6 md:px-12 lg:px-20 flex items-center max-lg:items-start py-16 lg:min-h-screen lg:py-20"
     >
+      <h2 className="sr-only">About</h2>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-x-5 lg:gap-x-5 gap-y-16 w-full max-w-[1600px] mx-auto min-w-0">
 
         {/* LEFT COLUMN (50%)  */}
